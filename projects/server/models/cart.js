@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('DataTypes');
+"use strict";
+const { Model } = require("DataTypes");
 module.exports = (DataTypes, DataTypes) => {
   class Cart extends Model {
     /**
@@ -10,34 +8,40 @@ module.exports = (DataTypes, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.User, {foreignKey: 'userId'});
-      this.belongsToMany(models.Products, {through:'Cart_Product', foreignKey:'cartId'})
+      this.belongsTo(models.User, { foreignKey: "userId" });
+      this.belongsToMany(models.Products, {
+        through: "Cart_Product",
+        foreignKey: "cartId",
+      });
     }
   }
-  Cart.init({
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+  Cart.init(
+    {
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      totalPrice: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      totalItem: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
     },
-    totalPrice: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    totalItem: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE
+    {
+      DataTypes,
+      modelName: "Cart",
     }
-  }, {
-    DataTypes,
-    modelName: 'Cart',
-  });
+  );
   return Cart;
 };

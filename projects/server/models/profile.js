@@ -1,37 +1,33 @@
 "use strict";
-const { Model } = require("DataTypes");
-module.exports = (DataTypes, DataTypes) => {
-  class Transaction extends Model {
+const { Model } = require("sequelize");
+module.exports = (sequelize, DataTypes) => {
+  class Profile extends Model {
     /**
      * Helper method for defining associations.
-     * This method is not a part of DataTypes lifecycle.
+     * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
       this.belongsTo(models.User, { foreignKey: "userId" });
-      this.belongsToMany(models.Products, {
-        through: "Transaction_Product",
-        foreignKey: "transactionId",
-      });
     }
   }
-  Transaction.init(
+  Profile.init(
     {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
       userId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
       },
-      totalPrice: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      avatar: {
+        type: DataTypes.STRING,
       },
-      totalItem: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      isPaid: {
+      isActive: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        defaultValue: true,
       },
       createdAt: {
         allowNull: false,
@@ -43,9 +39,9 @@ module.exports = (DataTypes, DataTypes) => {
       },
     },
     {
-      DataTypes,
-      modelName: "Transaction",
+      sequelize,
+      modelName: "Profile",
     }
   );
-  return Transaction;
+  return Profile;
 };

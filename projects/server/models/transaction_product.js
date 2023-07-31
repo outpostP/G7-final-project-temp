@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('DataTypes');
+"use strict";
+const { Model } = require("DataTypes");
 module.exports = (DataTypes, DataTypes) => {
   class Transaction_Product extends Model {
     /**
@@ -13,34 +11,37 @@ module.exports = (DataTypes, DataTypes) => {
       // define association here
     }
   }
-  Transaction_Product.init({
-    transactionId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+  Transaction_Product.init(
+    {
+      transactionId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      productId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      productPrice: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
     },
-    productId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    productPrice: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE
+    {
+      DataTypes,
+      modelName: "Transaction_Product",
     }
-  }, {
-    DataTypes,
-    modelName: 'Transaction_Product',
-  });
+  );
   return Transaction_Product;
 };

@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('DataTypes');
+"use strict";
+const { Model } = require("DataTypes");
 module.exports = (DataTypes, DataTypes) => {
   class Category extends Model {
     /**
@@ -10,25 +8,28 @@ module.exports = (DataTypes, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasMany(models.Products, {foreignKey: 'categoryId'})
+      this.hasMany(models.Products, { foreignKey: "categoryId" });
     }
   }
-  Category.init({
-    categoryName: {
-      type: DataTypes.STRING,
-      allowNull: false,
+  Category.init(
+    {
+      categoryName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
     },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE
+    {
+      DataTypes,
+      modelName: "Category",
     }
-  }, {
-    DataTypes,
-    modelName: 'Category',
-  });
+  );
   return Category;
 };
