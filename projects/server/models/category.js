@@ -1,26 +1,21 @@
 "use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
+const { Model } = require("DataTypes");
+module.exports = (DataTypes, DataTypes) => {
   class Category extends Model {
     /**
      * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
+     * This method is not a part of DataTypes lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasMany(models.Product, { foreignKey: "productId" });
+      this.hasMany(models.Products, { foreignKey: "categoryId" });
     }
   }
   Category.init(
     {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: DataTypes.INTEGER,
-      },
       categoryName: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -32,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      sequelize,
+      DataTypes,
       modelName: "Category",
     }
   );
