@@ -24,10 +24,11 @@ db.sequelize.sync({});
 // NOTE : Add your routes here
 
 //routes
-const { authRouter } = require("./routers");
+const { authRouter, profileRouter } = require("./routers");
 
 //middleware
 app.use("/auth", authRouter);
+app.use("/profile", profileRouter);
 
 // ===========================
 

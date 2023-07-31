@@ -19,7 +19,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       avatar: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       isActive: {
         type: DataTypes.BOOLEAN,

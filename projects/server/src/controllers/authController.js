@@ -1,13 +1,13 @@
 const db = require("../../models");
-const { authService } = require("../services");
+const { authService, commonService } = require("../services");
 
 const AuthController = {
   userLogin: async (req, res) => {
     try {
       const { username, password } = req.body;
-      const userData = await authService.findUser(username);
+      const userData = await commonService.findUser(username);
       if (!userData) {
-        return authService.validationFailed(res, 404, "User not found");
+        return authService.validationLoginFailed(res, 404, "User not found");
       }
 
       const validatePassword = await authService.validatePassword(
@@ -15,7 +15,7 @@ const AuthController = {
         userData.password
       );
       if (!validatePassword) {
-        return authService.validationFailed(res, 400, "Invalid password");
+        return authService.validationLoginFailed(res, 400, "Invalid password");
       }
 
       let payload = {
@@ -36,9 +36,35 @@ const AuthController = {
       });
     }
   },
+
   createCashier: async (req, res) => {
     try {
-    } catch (err) {}
+      const { username, email, password } = req.body;
+      const foundUser = await commonService.findUser(username);
+      const foundEmail = await commonService.findEmail(email);
+      if (foundUser || foundEmail) {
+        return authService.validationRegistrationFailed(
+          res,
+          400,
+          "User exists"
+        );
+      }
+
+      const userData = await authService.createNewCashier(
+        username,
+        email,
+        password
+      );
+      return res.status(200).json({
+        success: "Registration succeed",
+        data: { userData },
+      });
+    } catch (err) {
+      return res.status(500).json({
+        error: "Registration failed",
+        message: err.message,
+      });
+    }
   },
 };
 
