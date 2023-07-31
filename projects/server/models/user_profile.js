@@ -1,8 +1,6 @@
-'use strict';
-const {
-  Model
-} = require('DataTypes');
-module.exports = (DataTypes, DataTypes) => {
+"use strict";
+const { Model } = require("sequelize");
+module.exports = (sequelize, DataTypes) => {
   class User_Profile extends Model {
     /**
      * Helper method for defining associations.
@@ -10,34 +8,37 @@ module.exports = (DataTypes, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.User, {foreignKey: 'userId'});
+      this.belongsTo(models.User, { foreignKey: "userId" });
     }
   }
-  User_Profile.init({
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+  User_Profile.init(
+    {
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      avatar: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
     },
-    avatar: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE
+    {
+      sequelize,
+      modelName: "User_Profile",
     }
-  }, {
-    DataTypes,
-    modelName: 'User_Profile',
-  });
+  );
   return User_Profile;
 };
