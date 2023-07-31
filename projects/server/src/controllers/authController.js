@@ -6,10 +6,17 @@ const AuthController = {
     try {
       const { username, password } = req.body;
       const userData = await authService.findUser(username);
+      if (!userData) {
+        return authService.validationFailed(res, 404, "User not found");
+      }
+
       const validatePassword = await authService.validatePassword(
         password,
         userData.password
       );
+      if (!validatePassword) {
+        return authService.validationFailed(res, 400, "Invalid password");
+      }
 
       let payload = {
         id: userData.id,
@@ -19,13 +26,13 @@ const AuthController = {
       const token = await authService.generateToken(payload);
 
       return res.status(200).json({
-        message: "Login succeed",
+        success: "Login succeed",
         data: { userData, token },
       });
     } catch (err) {
       return res.status(500).json({
-        message: "Login failed",
-        error: err.message,
+        error: "Login failed",
+        message: err.message,
       });
     }
   },

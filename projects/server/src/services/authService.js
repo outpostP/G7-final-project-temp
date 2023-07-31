@@ -10,13 +10,27 @@ const bcrypt = require("bcrypt");
 const findUser = async (user) => {
   return await users.findOne({ where: { username: user } });
 };
+
 const generateToken = async (payload) => {
   return jwt.sign(payload, process.env.JWT_KEY, {
     expiresIn: "1h",
   });
 };
+
 const validatePassword = async (password, hashedPassword) => {
   return await bcrypt.compare(password, hashedPassword);
 };
 
-module.exports = { findUser, generateToken, validatePassword };
+const validationFailed = async (res, statusCode, message) => {
+  return res.status(statusCode).json({
+    error: "Login failed",
+    message: message,
+  });
+};
+
+module.exports = {
+  findUser,
+  generateToken,
+  validatePassword,
+  validationFailed,
+};
