@@ -10,21 +10,27 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasMany(models.Products, {foreignKey: 'categoryId'})
+      this.hasMany(models.Products, { foreignKey: "categoryId" });
     }
   }
-  Category.init({
-    categoryName: {
-      type: DataTypes.STRING,
-      allowNull: false,
+  Category.init(
+    {
+      categoryName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+      },
     },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE
+    {
+      sequelize,
+      modelName: "Category",
     }
   }, {
     sequelize,

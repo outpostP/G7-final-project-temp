@@ -20,6 +20,8 @@ app.use(
 );
 
 app.use(express.json());
+const db = require("../models");
+db.sequelize.sync({});
 
 //#region API ROUTES
 
@@ -28,10 +30,11 @@ app.use(express.json());
 const adminRouter = require('./routes')
 app.use('/admin', adminRouter)
 
-app.get("/api", (req, res) => {
-  res.send(`Hello, this is my API`);
-});
+//routes
+const { authRouter } = require("./routers");
 
+//middleware
+app.use("/auth", authRouter);
 app.get("/api/greetings", (req, res, next) => {
   res.status(200).json({
     message: "Hello, Student !",
