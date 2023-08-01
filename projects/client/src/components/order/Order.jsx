@@ -45,7 +45,7 @@ export const Order = () => {
 
       <Box bg="gray.100" borderWidth={"1px"} flex={3} p={4}>
         <Text fontSize="xl" fontWeight="bold" mb={4}>
-          Order Details
+          Menu
         </Text>
       </Box>
       <Box borderWidth={"1px"} flex={1.5} p={4}>
