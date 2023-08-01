@@ -4,6 +4,7 @@ require("dotenv").config({
 });
 const bcrypt = require("bcrypt");
 const db = require("../../models");
+const fs = require("fs");
 const users = db.User;
 const profiles = db.User_Profile;
 
@@ -75,6 +76,7 @@ const updateUserAvatar = async (userId, pathAvatar) => {
 };
 
 const deleteOldImage = (imagePath) => {
+  console.log(imagePath);
   fs.unlink(imagePath, (err) => {
     if (err) {
       console.error(err);

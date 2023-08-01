@@ -6,9 +6,9 @@ const {
   validateUpdateEmail,
   validateUpdatePassword,
   validateUpdateStatus,
-  validateUpdateAvatar,
 } = require("../middleware/validator");
 const { verifyToken, verifyAdmin } = require("../middleware/auth");
+const { multerUpload } = require("../middleware/multer");
 
 router.patch(
   "/username",
@@ -46,6 +46,11 @@ router.patch(
   profileController.updateStatus
 );
 
-router.post("/avatar", verifyToken, profileController.updateAvatar);
+router.post(
+  "/avatar",
+  verifyToken,
+  multerUpload.single("avatar"),
+  profileController.updateAvatar
+);
 
 module.exports = router;

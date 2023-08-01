@@ -139,9 +139,8 @@ const ProfileController = {
     try {
       const avatarPath = req.file.path;
       const { cashierId } = req.body;
-      console.log(avatarPath, cashierId);
 
-      if (!avatar) {
+      if (!avatarPath) {
         return profileService.validationAvatarFailed(
           res,
           400,
@@ -166,6 +165,7 @@ const ProfileController = {
       }
 
       await profileService.updateUserAvatar(cashierId, avatarPath);
+      console.log(userData);
 
       profileService.deleteOldImage(userData.avatar);
 
