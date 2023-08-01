@@ -10,6 +10,10 @@ const findUserId = async (id) => {
   return await users.findOne({ where: { id: id } });
 };
 
+const findProfileUserId = async (id) => {
+  return await users.findOne({ where: { id: id } });
+};
+
 const findUser = async (username) => {
   return await users.findOne({ where: { username: username } });
 };
@@ -24,6 +28,7 @@ const validatePassword = async (password, hashedPassword) => {
 
 module.exports = {
   findUser,
+  findProfileUserId,
   findEmail,
   findUserId,
   validatePassword,

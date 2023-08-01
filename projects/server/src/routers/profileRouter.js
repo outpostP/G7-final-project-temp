@@ -6,6 +6,7 @@ const {
   validateUpdateEmail,
   validateUpdatePassword,
   validateUpdateStatus,
+  validateUpdateAvatar,
 } = require("../middleware/validator");
 const { verifyToken, verifyAdmin } = require("../middleware/auth");
 
@@ -43,6 +44,13 @@ router.patch(
   validateUpdateStatus,
   validateRequest,
   profileController.updateStatus
+);
+
+router.post(
+  "/avatar",
+  verifyToken,
+  verifyAdmin,
+  profileController.updateAvatar
 );
 
 module.exports = router;

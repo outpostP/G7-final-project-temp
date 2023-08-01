@@ -61,6 +61,29 @@ const updateUserStatus = async (userId, status) => {
   return result;
 };
 
+const updateUserAvatar = async (userId, pathAvatar) => {
+  const result = await db.sequelize.transaction(async (t) => {
+    return await profiles.update(
+      {
+        avatar: pathAvatar,
+      },
+      { where: { userId: userId } },
+      { transaction: t }
+    );
+  });
+  return result;
+};
+
+const deleteOldImage = (imagePath) => {
+  fs.unlink(imagePath, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log("Previous avatar deleted successfully");
+  });
+};
+
 const validationUsernameFailed = async (res, statusCode, message) => {
   return res.status(statusCode).json({
     error: "Update username failed",
@@ -89,6 +112,13 @@ const validationStatusFailed = async (res, statusCode, message) => {
   });
 };
 
+const validationAvatarFailed = async (res, statusCode, message) => {
+  return res.status(statusCode).json({
+    error: "Update avatar failed",
+    message: message,
+  });
+};
+
 module.exports = {
   updateNewUsername,
   validationUsernameFailed,
@@ -98,4 +128,7 @@ module.exports = {
   updateNewPassword,
   validationStatusFailed,
   updateUserStatus,
+  updateUserAvatar,
+  validationAvatarFailed,
+  deleteOldImage,
 };

@@ -95,7 +95,7 @@ const ProfileController = {
           "Invalid password"
         );
       }
-      await profileService.updateNewPassword(userData.id, password);
+      await profileService.updateNewPassword(cashierId, password);
       return res.status(200).json({
         success: "Update password succeed",
         username: userData.username,
@@ -121,7 +121,7 @@ const ProfileController = {
         );
       }
 
-      await profileService.updateUserStatus(userData.id, isActive);
+      await profileService.updateUserStatus(cashierId, isActive);
       return res.status(200).json({
         success: "Update status succeed",
         username: userData.username,
@@ -130,6 +130,52 @@ const ProfileController = {
     } catch (err) {
       return res.status(500).json({
         error: "Update status failed",
+        message: err.message,
+      });
+    }
+  },
+
+  updateAvatar: async (req, res) => {
+    try {
+      const avatarPath = req.file.path;
+      const { cashierId } = req.body;
+      console.log(avatarPath, cashierId);
+
+      if (!avatar) {
+        return profileService.validationAvatarFailed(
+          res,
+          400,
+          "Avatar image is required"
+        );
+      }
+      if (!cashierId) {
+        return profileService.validationAvatarFailed(
+          res,
+          400,
+          "cashierId is required"
+        );
+      }
+
+      const userData = await commonService.findProfileUserId(cashierId);
+      if (!userData) {
+        return profileService.validationAvatarFailed(
+          res,
+          404,
+          "User not found"
+        );
+      }
+
+      await profileService.updateUserAvatar(cashierId, avatarPath);
+
+      profileService.deleteOldImage(userData.avatar);
+
+      return res.status(200).json({
+        success: "Update avatar succeed",
+        avatarPath,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        error: "Update avatar failed",
         message: err.message,
       });
     }
