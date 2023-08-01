@@ -44,9 +44,6 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Cart",
     }
-  }, {
-    sequelize,
-    modelName: 'Cart',
-  });
+  );
   return Cart;
 };

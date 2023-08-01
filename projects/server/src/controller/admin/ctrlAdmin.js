@@ -39,7 +39,7 @@ async function getAdmin(req, res) {
 }
 
 async function updateCategory (req, res) {
-    const {category} = req.body
+    const {category} = req.body;
     try {
         return db.sequelize.transaction(async (t) => {
             const updatedCategory = await Category.update(
@@ -59,7 +59,7 @@ async function updateCategory (req, res) {
         });
     } catch (error) {
         res.status(500).json({ message: 'An error occurred', error: error.message });
-    }
+    };
 };
 
 async function getCashier(req,res) {
@@ -71,13 +71,13 @@ async function getCashier(req,res) {
                     where : {isActive: true},
                 }
             ]
-        })
-        return res.status(200).json({message:' fetching succeed', data: cashier})
+        });
+        return res.status(200).json({message:' fetching succeed', data: cashier});
     }
     catch (err) {
         console.error('error', err)
         return res.status(500).json({message: err.message})
-    }
+    };
 };
 
 async function addCashier(req,res){
@@ -97,14 +97,14 @@ async function addCashier(req,res){
                     userId: addingCashier.id
                 },
                 {transaction: t}
-           ) 
-           res.status(200).json({message: 'cashier added', data: addingCashier })
-    })
+           ); 
+           res.status(200).json({message: 'cashier added', data: addingCashier });
+    });
     }
     catch (err) {
         console.error('error', err)
         return res.status(500).json({message: err.message})
-    }
+    };
 };
 
 async function getProduct(req, res){
@@ -115,12 +115,12 @@ async function getProduct(req, res){
                     model: Category,
                 }
             ]
-        })
+        });
         return res.status(200).json({message:' fetching succeed', data: product})
     }
     catch (err) {
         return res.status(500).json({message: err.message});
-    }
+    };
 };
 
 async function addProduct(req,res){
@@ -136,14 +136,13 @@ async function addProduct(req,res){
                  categoryId: category
               },
               { transaction: t }
-         )
+         );
          res.status(200).json({ message: 'Product added successfully', category: addproduct });
      });
-
     }
     catch (err) {
         return res.status(500).json({message: err.message});
-    }
-}
+    };
+};
 
-module.exports = {getCategory, addCategory, getAdmin, getCashier, addCashier, getProduct, addProduct}
+module.exports = {getCategory, addCategory, getAdmin, getCashier, addCashier, getProduct, addProduct, updateCategory}
