@@ -17,6 +17,10 @@
 .env.test.local
 .env.production.local
 
+public
+
+mimiP.session.sql
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
