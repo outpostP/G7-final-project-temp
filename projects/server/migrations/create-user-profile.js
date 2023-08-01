@@ -15,7 +15,6 @@ module.exports = {
       },
       avatar: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
       isActive: {
         type: Sequelize.BOOLEAN,

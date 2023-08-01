@@ -1,8 +1,8 @@
 'use strict';
 const {
   Model
-} = require('DataTypes');
-module.exports = (DataTypes, DataTypes) => {
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
   class Cart_Product extends Model {
     /**
      * Helper method for defining associations.
@@ -35,7 +35,7 @@ module.exports = (DataTypes, DataTypes) => {
       type: DataTypes.DATE
     }
   }, {
-    DataTypes,
+    sequelize,
     modelName: 'Cart_Product',
   });
   return Cart_Product;
