@@ -165,7 +165,6 @@ const ProfileController = {
       }
 
       await profileService.updateUserAvatar(cashierId, avatarPath);
-      console.log(userData);
 
       profileService.deleteOldImage(userData.avatar);
 

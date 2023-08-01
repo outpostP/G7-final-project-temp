@@ -76,7 +76,6 @@ const updateUserAvatar = async (userId, pathAvatar) => {
 };
 
 const deleteOldImage = (imagePath) => {
-  console.log(imagePath);
   fs.unlink(imagePath, (err) => {
     if (err) {
       console.error(err);
