@@ -46,11 +46,6 @@ router.patch(
   profileController.updateStatus
 );
 
-router.post(
-  "/avatar",
-  verifyToken,
-  verifyAdmin,
-  profileController.updateAvatar
-);
+router.post("/avatar", verifyToken, profileController.updateAvatar);
 
 module.exports = router;
