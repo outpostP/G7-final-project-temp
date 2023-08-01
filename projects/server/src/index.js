@@ -1,12 +1,8 @@
-// require("dotenv/config");
+require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 
-const path = require('path');
 const { join } = require("path");
-require('dotenv').config({
-	path: path.resolve(__dirname, '../.env'),
-});
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -27,20 +23,13 @@ db.sequelize.sync({});
 
 // ===========================
 // NOTE : Add your routes here
-const adminRouter = require('./routes')
-app.use('/admin', adminRouter)
 
 //routes
-const { authRouter } = require("./routers");
+const { authRouter, profileRouter } = require("./routers");
 
 //middleware
 app.use("/auth", authRouter);
-app.get("/api/greetings", (req, res, next) => {
-  res.status(200).json({
-    message: "Hello, Student !",
-    cok: 'bego'
-  });
-});
+app.use("/profile", profileRouter);
 
 // ===========================
 
