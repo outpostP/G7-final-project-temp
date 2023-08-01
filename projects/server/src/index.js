@@ -22,6 +22,8 @@ db.sequelize.sync({});
 
 // ===========================
 // NOTE : Add your routes here
+const adminRouter = require("./routes");
+app.use("/admin", adminRouter);
 
 //routes
 const { authRouter, profileRouter } = require("./routers");
@@ -29,6 +31,12 @@ const { authRouter, profileRouter } = require("./routers");
 //middleware
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
+app.get("/api/greetings", (req, res, next) => {
+  res.status(200).json({
+    message: "Hello, Student !",
+    cok: "bego",
+  });
+});
 
 // ===========================
 
