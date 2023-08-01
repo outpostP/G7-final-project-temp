@@ -19,6 +19,7 @@
 
 /public
 
+/.vscode
 mimiP.session.sql
 
 npm-debug.log*
