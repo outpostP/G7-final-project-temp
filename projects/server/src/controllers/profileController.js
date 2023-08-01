@@ -70,6 +70,70 @@ const ProfileController = {
       });
     }
   },
+
+  updatePassword: async (req, res) => {
+    try {
+      const { cashierId, currentPassword, password } = req.body;
+
+      const userData = await commonService.findUserId(cashierId);
+      if (!userData) {
+        return profileService.validationPasswordFailed(
+          res,
+          404,
+          "User not found"
+        );
+      }
+
+      const validatePassword = await commonService.validatePassword(
+        currentPassword,
+        userData.password
+      );
+      if (!validatePassword) {
+        return profileService.validationPasswordFailed(
+          res,
+          400,
+          "Invalid password"
+        );
+      }
+      await profileService.updateNewPassword(userData.id, password);
+      return res.status(200).json({
+        success: "Update password succeed",
+        username: userData.username,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        error: "Update password failed",
+        message: err.message,
+      });
+    }
+  },
+
+  updateStatus: async (req, res) => {
+    try {
+      const { cashierId, isActive } = req.body;
+
+      const userData = await commonService.findUserId(cashierId);
+      if (!userData) {
+        return profileService.validationStatusFailed(
+          res,
+          404,
+          "User not found"
+        );
+      }
+
+      await profileService.updateUserStatus(userData.id, isActive);
+      return res.status(200).json({
+        success: "Update status succeed",
+        username: userData.username,
+        isActive,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        error: "Update status failed",
+        message: err.message,
+      });
+    }
+  },
 };
 
 module.exports = ProfileController;

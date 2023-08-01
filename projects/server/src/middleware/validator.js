@@ -45,8 +45,6 @@ const validateRegistration = [
     }
     return true;
   }),
-
-  //body file avatar belum
 ];
 
 const validateUpdateUsername = [
@@ -78,32 +76,40 @@ const validateUpdateEmail = [
   body("newEmail").trim().isEmail().withMessage("Invalid email format"),
 ];
 
-// const validateUpdatePassword = [
-//   body("currentPassword")
-//     .isLength({ min: 6 })
-//     .withMessage("Password must be at least 6 characters long")
-//     .matches(/[A-Z]/)
-//     .withMessage("Password must contain at least one capital letter")
-//     .matches(/[!@#$%^&*()\-_=+{}[\]|;:'",.<>/?]/)
-//     .withMessage("Password must contain at least one special character"),
+const validateUpdatePassword = [
+  body("cashierId").trim().notEmpty().withMessage("cashierId is required"),
 
-//   body("password")
-//     .isLength({ min: 6 })
-//     .withMessage("Password must be at least 6 characters long")
-//     .matches(/[A-Z]/)
-//     .withMessage("Password must contain at least one capital letter")
-//     .matches(/[!@#$%^&*()\-_=+{}[\]|;:'",.<>/?]/)
-//     .withMessage("Password must contain at least one special character"),
+  body("currentPassword")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long")
+    .matches(/[A-Z]/)
+    .withMessage("Password must contain at least one capital letter")
+    .matches(/[!@#$%^&*()\-_=+{}[\]|;:'",.<>/?]/)
+    .withMessage("Password must contain at least one special character"),
 
-//   body("confirmPassword").custom((value, { req }) => {
-//     console.log(typeof value);
-//     console.log(typeof req.body.password);
-//     if (value !== req.body.password) {
-//       throw new Error("Confirm password doesn't match the password");
-//     }
-//     return true;
-//   }),
-// ];
+  body("password")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long")
+    .matches(/[A-Z]/)
+    .withMessage("Password must contain at least one capital letter")
+    .matches(/[!@#$%^&*()\-_=+{}[\]|;:'",.<>/?]/)
+    .withMessage("Password must contain at least one special character"),
+
+  body("confirmPassword").custom((value, { req }) => {
+    console.log(typeof value);
+    console.log(typeof req.body.password);
+    if (value !== req.body.password) {
+      throw new Error("Confirm password doesn't match the password");
+    }
+    return true;
+  }),
+];
+
+const validateUpdateStatus = [
+  body("cashierId").trim().notEmpty().withMessage("cashierId is required"),
+
+  body("isActive").trim().notEmpty().withMessage("isActive is required"),
+];
 
 module.exports = {
   validateRequest,
@@ -111,5 +117,6 @@ module.exports = {
   validateRegistration,
   validateUpdateUsername,
   validateUpdateEmail,
-  // validateUpdatePassword,
+  validateUpdatePassword,
+  validateUpdateStatus,
 };

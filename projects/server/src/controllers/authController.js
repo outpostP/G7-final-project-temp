@@ -10,7 +10,7 @@ const AuthController = {
         return authService.validationLoginFailed(res, 404, "User not found");
       }
 
-      const validatePassword = await authService.validatePassword(
+      const validatePassword = await commonService.validatePassword(
         password,
         userData.password
       );

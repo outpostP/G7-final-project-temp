@@ -14,10 +14,6 @@ const generateToken = async (payload) => {
   });
 };
 
-const validatePassword = async (password, hashedPassword) => {
-  return await bcrypt.compare(password, hashedPassword);
-};
-
 const validationLoginFailed = async (res, statusCode, message) => {
   return res.status(statusCode).json({
     error: "Login failed",
@@ -58,7 +54,6 @@ const createNewCashier = async (username, email, password) => {
 
 module.exports = {
   generateToken,
-  validatePassword,
   validationLoginFailed,
   validationRegistrationFailed,
   createNewCashier,
