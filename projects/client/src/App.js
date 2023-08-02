@@ -1,12 +1,15 @@
 import axios from "axios";
-import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import OrderPage from "./pages/OrderPage";
+import CartPage from "./pages/CashierCartPage";
+import Sidebar from "./pages/SidebarPage";
 
 function App() {
+  const location = useLocation();
+  let showSidebar = location.pathname !== "/" ? true : false;
+
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -19,10 +22,17 @@ function App() {
   }, []);
   return (
     <div className="App">
-      <Routes>
-        <Route path="/" element={<LoginPage />}></Route>
-        <Route path="/order" element={<OrderPage />}></Route>
-      </Routes>
+      <div style={{ display: "flex" }}>
+        {showSidebar && <Sidebar />}
+        <div style={{ flex: 1 }}>
+          <Routes>
+            <Route path="/" element={<LoginPage />}></Route>
+            <Route path="/cart" element={<CartPage />}></Route>
+            <Route path="/transaction" element={<CartPage />}></Route>
+            <Route path="/report" element={<CartPage />}></Route>
+          </Routes>
+        </div>
+      </div>
     </div>
   );
 }
