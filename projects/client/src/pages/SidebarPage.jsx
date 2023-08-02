@@ -6,7 +6,7 @@ const SidebarPage = () => {
   return (
     <>
       <Box>
-        <Sidebar data={"admin"} />
+        <Sidebar isAdmin={false} />
       </Box>
     </>
   );

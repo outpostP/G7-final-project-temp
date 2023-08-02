@@ -27,7 +27,7 @@ export const Sidebar = (data) => {
               <Avatar size="xl" name="Cashier Name" src="/image/foodlogo.png" />
             </WrapItem>
           </Wrap>
-          <SidebarIcon data={data.data} />
+          <SidebarIcon data={data.isAdmin} />
           <Spacer />
           <List spacing="20px">
             <ListItem>

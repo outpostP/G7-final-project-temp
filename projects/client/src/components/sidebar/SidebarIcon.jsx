@@ -23,7 +23,7 @@ import { BsPeople } from "react-icons/bs";
 import { TbReportAnalytics } from "react-icons/tb";
 
 export const SidebarIcon = (isAdmin) => {
-  if (isAdmin.data === "admin") {
+  if (isAdmin.data) {
     return (
       <>
         <List spacing="20px">
