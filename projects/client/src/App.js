@@ -20,14 +20,14 @@ function checkIsAdmin() {
 
 function ProtectedAdminRoute() {
   const isAdmin = checkIsAdmin();
-
+  console.log(isAdmin, "1");
   return isAdmin ? <Outlet /> : <Navigate to="/" />;
 }
 
 // ProtectedRoute for non-admin users
 function ProtectedUserRoute() {
   const isAdmin = checkIsAdmin();
-
+  console.log(isAdmin, "2");
   return !isAdmin ? <Outlet /> : <Navigate to="/" />;
 }
 
