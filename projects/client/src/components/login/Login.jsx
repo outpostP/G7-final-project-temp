@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate hook
 import { useToast } from "@chakra-ui/react";
 
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  const toast = useToast();  // add this line to use Chakra UI Toast
+  const navigate = useNavigate();  // Initialize useNavigate hook
+  const toast = useToast();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    
     try {
       const response = await axios.post('http://localhost:8000/admin/login', { username, password });
       if (response) {
@@ -20,6 +21,9 @@ function LoginForm() {
           localStorage.setItem('cartId', response.data.cartId);
         }
         localStorage.setItem('isAdmin', response.data.isAdmin);
+        
+        // Check user role and redirect
+        response.data.isAdmin ? navigate('/admin') : navigate('/user');
 
         toast({
           title: "Login successful!",

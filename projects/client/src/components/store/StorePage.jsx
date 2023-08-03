@@ -20,7 +20,7 @@ const StorePage = () => {
 
         const fetchCartItems = async () => {
             try {
-                const response = await axios.get('/api/cart');
+                const response = await axios.get('http://localhost:8000/admin/cart/item');
                 setCartItems(response.data);
             } catch (error) {
                 console.error(error);

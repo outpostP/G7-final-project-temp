@@ -6,7 +6,7 @@ import StorePage from "./components/store/StorePage";
 import Sidebar from "./Layout/Sidebar";
 import Homepage from "./Layout/Homepage";
 import LoginForm, { Login } from "./components/login/Login";
-
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function checkIsAdmin() {
@@ -18,10 +18,11 @@ function ProtectedAdminRoute() {
   const navigate = useNavigate();
   const isAdmin = checkIsAdmin();
 
-  if (!isAdmin) {
-    navigate('/admin');
-    return null;
-  }
+  useEffect(() => {
+    if (!isAdmin) {
+      navigate('/user');
+    }
+  }, [isAdmin, navigate]);
 
   return <Outlet />;
 }
@@ -30,14 +31,31 @@ function ProtectedUserRoute() {
   const navigate = useNavigate();
   const isAdmin = checkIsAdmin();
 
-  if (isAdmin) {
-    navigate('/user');
-    return null;
-  }
+  useEffect(() => {
+    if (isAdmin) {
+      navigate('/admin');
+    }
+  }, [isAdmin, navigate]);
 
   return <Outlet />;
 }
 
+  function checkIsAuthenticated() {
+    const token = localStorage.getItem('token');
+    return token !== null;
+  }
+  
+  function ProtectedRoute({ children }) {
+    const navigate = useNavigate();
+    const isAuthenticated = checkIsAuthenticated();
+  
+    if (!isAuthenticated) {
+      navigate('/login');
+      return null;
+    }
+  
+    return children;
+  }
 
 function AdminDashboard() {
   return <h1>AdminDashboard</h1>;
@@ -63,27 +81,22 @@ function UserProfile() {
   return <h1>UserProfile</h1>;
 }
 
-
 const router = createBrowserRouter(
   createRoutesFromElements(
-    
-      <Route path="/" element={<Homepage />}>
-        <Route index element={<LoginForm />} />
-      
-        <Route path="admin" element={<ProtectedAdminRoute/>}>
-          <Route index element={<AdminDashboard />} /> 
-          <Route path="settings" element={<AdminSettings />} /> 
-          <Route path="reports" element={<AdminReports />} /> 
-        </Route>
-
-        <Route path="user" element={<ProtectedUserRoute/>}>
-          <Route index element={<StorePage />}/> 
-          <Route path="store" element={<UserDashboard />} /> 
-          <Route path="settings" element={<UserSettings />} /> 
-          <Route path="profile" element={<UserProfile />} /> 
-        </Route>
-
+    <Route path="/" element={<Homepage />}>
+      <Route index element={<LoginForm />} />
+      <Route path="admin" element={<ProtectedAdminRoute />}>
+        <Route index element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} /> 
+        <Route path="settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} /> 
+        <Route path="reports" element={<ProtectedRoute><AdminReports /></ProtectedRoute>} /> 
       </Route>
+      <Route path="user" element={<ProtectedUserRoute />}>
+        <Route index element={<ProtectedRoute><StorePage /></ProtectedRoute>} /> 
+        <Route path="board" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} /> 
+        <Route path="settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} /> 
+        <Route path="profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} /> 
+      </Route>
+    </Route>
   )
 );
 
