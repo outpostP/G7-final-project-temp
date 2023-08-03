@@ -7,23 +7,37 @@ import Sidebar from "./Layout/Sidebar";
 import Homepage from "./Layout/Homepage";
 import LoginForm, { Login } from "./components/login/Login";
 
+import { useNavigate } from 'react-router-dom';
+
 function checkIsAdmin() {
   const role = localStorage.getItem('isAdmin');
-  return role;
+  return role === 'true';
 }
 
 function ProtectedAdminRoute() {
+  const navigate = useNavigate();
   const isAdmin = checkIsAdmin();
 
-  return isAdmin ? <Outlet /> : <Navigate to="/" />;
+  if (!isAdmin) {
+    navigate('/admin');
+    return null;
+  }
+
+  return <Outlet />;
 }
 
-// ProtectedRoute for non-admin users
 function ProtectedUserRoute() {
+  const navigate = useNavigate();
   const isAdmin = checkIsAdmin();
 
-  return !isAdmin ? <Outlet /> : <Navigate to="/" />;
+  if (isAdmin) {
+    navigate('/user');
+    return null;
+  }
+
+  return <Outlet />;
 }
+
 
 function AdminDashboard() {
   return <h1>AdminDashboard</h1>;
@@ -55,7 +69,6 @@ const router = createBrowserRouter(
     
       <Route path="/" element={<Homepage />}>
         <Route index element={<LoginForm />} />
-        <Route path="store" element={<StorePage />}/> 
       
         <Route path="admin" element={<ProtectedAdminRoute/>}>
           <Route index element={<AdminDashboard />} /> 
@@ -64,7 +77,8 @@ const router = createBrowserRouter(
         </Route>
 
         <Route path="user" element={<ProtectedUserRoute/>}>
-          <Route index element={<UserDashboard />} /> 
+          <Route index element={<StorePage />}/> 
+          <Route path="store" element={<UserDashboard />} /> 
           <Route path="settings" element={<UserSettings />} /> 
           <Route path="profile" element={<UserProfile />} /> 
         </Route>

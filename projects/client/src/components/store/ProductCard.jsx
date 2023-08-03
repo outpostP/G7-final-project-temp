@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, Text, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper } from '@chakra-ui/react';
+import { Box, Button, Text, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Image } from '@chakra-ui/react';
 import axios from 'axios';
 
 const ProductCard = ({ product }) => {
@@ -10,11 +10,12 @@ const ProductCard = ({ product }) => {
     };
 
     const cartid = localStorage.getItem("cartId");
+    console.log(cartid);
 
     const handleUpdateCart = async () => {
         try {
-            const response = await axios.put('/cart/item', {
-                cartId: cartid, // Replace with your cart ID
+            const response = await axios.put('http://localhost:8000/admin/cart/item', {
+                cartId: cartid,
                 productId: product.id,
                 quantity: quantity
             });
@@ -29,6 +30,8 @@ const ProductCard = ({ product }) => {
         <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6">
             <Text fontSize="xl" mb="4">{product.productName}</Text>
             <Text mb="4">${product.productPrice}</Text>
+            <Text mb="4">{product.productDescription}</Text>
+            <Image src={`http://localhost:8000/${product.productImage}`} alt={product.productName} mb="4" />
             <NumberInput min={0} value={quantity} onChange={handleQuantityChange} mb="4">
                 <NumberInputField />
                 <NumberInputStepper>
