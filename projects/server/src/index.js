@@ -17,7 +17,7 @@ app.use(
 
 app.use(express.json());
 const db = require("../models");
-db.sequelize.sync({});
+// db.sequelize.sync({});
 
 //#region API ROUTES
 
@@ -25,11 +25,12 @@ db.sequelize.sync({});
 // NOTE : Add your routes here
 
 //routes
-const { authRouter, profileRouter } = require("./routers");
+const { authRouter, profileRouter, adminRouter } = require("./routers");
 
 //middleware
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
+app.use('/admin', adminRouter);
 
 // ===========================
 
