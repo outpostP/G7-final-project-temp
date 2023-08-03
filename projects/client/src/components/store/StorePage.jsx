@@ -6,8 +6,18 @@ import ProductList from "./ProductList";
 import Cart from "./Cart";
 
 const StorePage = () => {
-  const [cartItems, setCartItems] = useState([]);
-  const [refreshCart, setRefreshCart] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/admin/product');
+                setProducts(response.data.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
   const fetchCartItems = async () => {
     try {

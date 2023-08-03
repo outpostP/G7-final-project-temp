@@ -89,31 +89,59 @@ async function getCashierAll(req,res) {
     };
 };
 
-async function createCart(id){
+async function addCashier(req, res) {
     try {
+        const { username, email, password } = req.body;
         return db.sequelize.transaction(async (t) => {
-            const addcart = await Cart.create(
-              {
-                 userId: id
-              },
-              { transaction: t }
-         );
-         
-     });
-    }
-    catch (err) {
-        throw new Error('failed to create cart')
+            const addingCashier = await Users.create(
+                {
+                    username,
+                    email,
+                    password,
+                },
+                { transaction: t }
+            );
+
+            console.log(addingCashier);
+
+            // Creating cart and profile within the same transaction
+            await createCart(addingCashier.id, t);
+            await createProfile(addingCashier.id, t);
+
+            res.status(200).json({ message: 'cashier added', data: addingCashier });
+        });
+    } catch (err) {
+        console.error('Error adding cashier:', err);
+        return res.status(500).json({ message: err.message });
     }
 };
 
-async function createProfile(id) {
+async function createCart(id, transaction) {
+    try {
+        const addcart = await Cart.create(
+            {
+                userId: id,
+            },
+            { transaction }
+        );
+
+        return addcart;
+    } catch (err) {
+        console.error('Error creating cart:', err);
+        throw new Error('Failed to create cart');
+    }
+};
+
+async function createProfile(id, transaction) {
     try {
         console.log('Creating profile for user ID:', id);
         const profile = await Profile.create(
             {
                 userId: id,
             },
+            { transaction }
         );
+
         console.log('Profile created:', profile);
         return profile;
     } catch (err) {
@@ -801,7 +829,7 @@ const updateCart = async (req, res) => {
     const { cartId, productId, quantity } = req.body;
 
     try {
-        await sequelize.transaction(async (t) => {
+        await db.sequelize.transaction(async (t) => {
             const item = await Cart_Product.findOne({ where: { cartId, productId } }, { transaction: t });
 
             if (!item) {
@@ -858,4 +886,4 @@ async function getCart(req, res) {
 }
 
 
-module.exports = {login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}
+module.exports = {getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}
