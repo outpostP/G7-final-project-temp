@@ -871,7 +871,7 @@ async function getCart(req, res) {
   async function login(req, res){
     const { username, password } = req.body;
     const user = await Users.findOne({ where: { username } });
-  console.log(user.isAdmin)
+ 
   if (!user) {
     return res.status(401).json({ error: 'Invalid username or password' });
   }

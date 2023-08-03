@@ -59,9 +59,25 @@ function ProtectedUserRoute() {
   return <Outlet />;
 }
 
-function checkIsAuthenticated() {
-  const token = localStorage.getItem("token");
-  return token !== null;
+  function checkIsAuthenticated() {
+    const token = localStorage.getItem('token');
+    return token !== null;
+  }
+  
+  function ProtectedRoute({ children }) {
+    const navigate = useNavigate();
+    const isAuthenticated = checkIsAuthenticated();
+  
+    if (!isAuthenticated) {
+      navigate('/login');
+      return null;
+    }
+  
+    return children;
+  }
+
+function AdminDashboard() {
+  return <h1>AdminDashboard</h1>;
 }
 
 function ProtectedRoute({ children }) {
