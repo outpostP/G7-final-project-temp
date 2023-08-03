@@ -21,7 +21,6 @@ function ProtectedAdminRoute() {
 // ProtectedRoute for non-admin users
 function ProtectedUserRoute() {
   const isAdmin = checkIsAdmin();
-  console.log(isAdmin)
 
   return !isAdmin ? <Outlet /> : <Navigate to="/" />;
 }
