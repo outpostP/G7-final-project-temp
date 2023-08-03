@@ -768,6 +768,7 @@ const deleteCategory = async (req, res) => {
     try {
         const {id} = req.params;
         const {productname, productprice, productdes, category}  = req.body;
+        const product = await Product.findByPk(id)
         let updateData = {
             productName: productname,
             productPrice: productprice,
@@ -776,7 +777,10 @@ const deleteCategory = async (req, res) => {
         };
         if(req.file && req.file.path) {
             updateData.productImage = req.file.path;
-        }
+        };
+        if (product.productImage && fs.existsSync(product.productImage)) {
+            fs.unlinkSync(product.productImage);
+        };
         return db.sequelize.transaction(async (t) => {
             const updateprod = await Product.update(
                 updateData,
