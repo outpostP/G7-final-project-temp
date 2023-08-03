@@ -1,39 +1,81 @@
-import axios from "axios";
+// import axios from "axios";
+// import logo from "./logo.svg";
 import "./App.css";
-import { useEffect, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import CartPage from "./pages/CashierCartPage";
-import Sidebar from "./pages/SidebarPage";
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Navigate, Outlet } from "react-router-dom";
+import StorePage from "./components/store/StorePage";
+import Sidebar from "./Layout/Sidebar";
+import Homepage from "./Layout/Homepage";
+import LoginForm, { Login } from "./components/login/Login";
+
+function checkIsAdmin() {
+  const role = localStorage.getItem('isAdmin');
+  return role;
+}
+
+function ProtectedAdminRoute() {
+  const isAdmin = checkIsAdmin();
+
+  return isAdmin ? <Outlet /> : <Navigate to="/" />;
+}
+
+// ProtectedRoute for non-admin users
+function ProtectedUserRoute() {
+  const isAdmin = checkIsAdmin();
+
+  return !isAdmin ? <Outlet /> : <Navigate to="/" />;
+}
+
+function AdminDashboard() {
+  return <h1>AdminDashboard</h1>;
+}
+
+function AdminSettings() {
+  return <h1>AdminSettings</h1>;
+}
+
+function AdminReports() {
+  return <h1>AdminReports</h1>;
+}
+
+function UserDashboard() {
+  return <h1>UserDashboard</h1>;
+}
+
+function UserSettings() {
+  return <h1>UserSettings</h1>;
+}
+
+function UserProfile() {
+  return <h1>UserProfile</h1>;
+}
+
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    
+      <Route path="/" element={<Homepage />}>
+        <Route index element={<LoginForm />} />
+        <Route path="store" element={<StorePage />}/> 
+      
+        <Route path="admin" element={<ProtectedAdminRoute/>}>
+          <Route index element={<AdminDashboard />} /> 
+          <Route path="settings" element={<AdminSettings />} /> 
+          <Route path="reports" element={<AdminReports />} /> 
+        </Route>
+
+        <Route path="user" element={<ProtectedUserRoute/>}>
+          <Route index element={<UserDashboard />} /> 
+          <Route path="settings" element={<UserSettings />} /> 
+          <Route path="profile" element={<UserProfile />} /> 
+        </Route>
+
+      </Route>
+  )
+);
 
 function App() {
-  const location = useLocation();
-  let showSidebar = location.pathname !== "/" ? true : false;
-
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/greetings`
-      );
-      setMessage(data?.message || "");
-    })();
-  }, []);
   return (
-    <div className="App">
-      <div style={{ display: "flex" }}>
-        {showSidebar && <Sidebar />}
-        <div style={{ flex: 1 }}>
-          <Routes>
-            <Route path="/" element={<LoginPage />}></Route>
-            <Route path="/cart" element={<CartPage />}></Route>
-            <Route path="/transaction" element={<CartPage />}></Route>
-            <Route path="/report" element={<CartPage />}></Route>
-          </Routes>
-        </div>
-      </div>
-    </div>
+    <RouterProvider router={router}/>
   );
 }
 
