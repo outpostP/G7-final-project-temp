@@ -38,7 +38,7 @@ export const Sidebar = (data) => {
     <>
       <Box borderWidth="1px" w="110px" h="100vh" pb="50px">
         <Flex h="full" flexDirection="column" alignItems="center">
-          <Wrap pt="30px" pb="10 0px">
+          <Wrap pt="20px" pb="100px">
             <WrapItem>
               <Button w={"full"} variant="unstyled" onClick={logout}>
                 <Avatar
