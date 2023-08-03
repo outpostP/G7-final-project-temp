@@ -2,9 +2,9 @@ import axios from "axios";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import Sidebar from "./pages/SidebarPage";
 import LoginPage from "./pages/LoginPage";
 import CartPage from "./pages/CashierCartPage";
-import Sidebar from "./pages/SidebarPage";
 
 function App() {
   const location = useLocation();
