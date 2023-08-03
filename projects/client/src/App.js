@@ -14,20 +14,18 @@ import Homepage from "./Layout/Homepage";
 import LoginPage from "./pages/LoginPage";
 
 function checkIsAdmin() {
-  const role = localStorage.getItem("isAdmin");
+  const role = JSON.parse(localStorage.getItem("isAdmin"));
   return role;
 }
 
 function ProtectedAdminRoute() {
   const isAdmin = checkIsAdmin();
-  console.log(isAdmin, "1");
   return isAdmin ? <Outlet /> : <Navigate to="/" />;
 }
 
 // ProtectedRoute for non-admin users
 function ProtectedUserRoute() {
   const isAdmin = checkIsAdmin();
-  console.log(isAdmin, "2");
   return !isAdmin ? <Outlet /> : <Navigate to="/" />;
 }
 

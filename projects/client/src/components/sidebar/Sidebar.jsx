@@ -16,7 +16,8 @@ import { IoSettingsOutline, IoLogOutOutline } from "react-icons/io5";
 import { SidebarIcon } from "./SidebarIcon";
 import { useNavigate } from "react-router-dom";
 
-export const Sidebar = (data) => {
+export const Sidebar = () => {
+  const isAdmin = localStorage.getItem("isAdmin");
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -49,7 +50,7 @@ export const Sidebar = (data) => {
               </Button>
             </WrapItem>
           </Wrap>
-          <SidebarIcon data={data.isAdmin} />
+          <SidebarIcon data={isAdmin} />
           <Spacer />
           <List spacing="25px">
             <ListItem>

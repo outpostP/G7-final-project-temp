@@ -6,11 +6,9 @@ const SidebarForm = () => {
   const path = useLocation();
   const showSidebar = path.pathname === "/";
 
-  const dataAdmin = localStorage.getItem("isAdmin") ? true : false;
-
   return (
     <>
-      <Box>{!showSidebar && <Sidebar isAdmin={dataAdmin} />}</Box>
+      <Box>{!showSidebar && <Sidebar />}</Box>
     </>
   );
 };
