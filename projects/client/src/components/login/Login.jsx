@@ -223,4 +223,6 @@ export const Login = () => {
       </Box>
     </form>
   );
-};
+}
+
+export default LoginForm;
