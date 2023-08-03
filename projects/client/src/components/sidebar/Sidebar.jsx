@@ -10,11 +10,7 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import {
-  IoFastFoodOutline,
-  IoSettingsOutline,
-  IoLogOutOutline,
-} from "react-icons/io5";
+import { IoSettingsOutline, IoLogOutOutline } from "react-icons/io5";
 import { SidebarIcon } from "./SidebarIcon";
 
 export const Sidebar = (data) => {
