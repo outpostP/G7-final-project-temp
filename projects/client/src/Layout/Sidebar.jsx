@@ -1,17 +1,15 @@
-import { Box, Button, Icon, VStack } from '@chakra-ui/react';
-import { FaUser } from 'react-icons/fa';
-import { Outlet } from 'react-router-dom';
+import { Box, Text } from "@chakra-ui/react";
+import React from "react";
+import { Sidebar } from "../components/sidebar/Sidebar";
 
-const Sidebar = () => {
+const SidebarForm = () => {
   return (
-    <Box w="200px" h="100vh" bg="gray.800" color="white">
-      <VStack p="10" spacing="10" align="start">
-        <Button leftIcon={<Icon as={FaUser} />} colorScheme="teal" variant="solid">
-          Login
-        </Button>
-      </VStack>
-    </Box>
+    <>
+      <Box>
+        <Sidebar isAdmin={false} />
+      </Box>
+    </>
   );
 };
 
-export default Sidebar;
+export default SidebarForm;

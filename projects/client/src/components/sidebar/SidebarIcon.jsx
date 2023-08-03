@@ -1,22 +1,6 @@
 import React from "react";
-import {
-  Avatar,
-  Box,
-  Flex,
-  Icon,
-  List,
-  ListItem,
-  Spacer,
-  Text,
-  Wrap,
-  WrapItem,
-} from "@chakra-ui/react";
-import {
-  IoFastFoodOutline,
-  IoSettingsOutline,
-  IoLogOutOutline,
-} from "react-icons/io5";
-
+import { Icon, List, ListItem } from "@chakra-ui/react";
+import { IoFastFoodOutline } from "react-icons/io5";
 import { TbCategory } from "react-icons/tb";
 import { MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { BsPeople } from "react-icons/bs";

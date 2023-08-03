@@ -1,14 +1,20 @@
 // import axios from "axios";
 // import logo from "./logo.svg";
 import "./App.css";
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Navigate, Outlet } from "react-router-dom";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import StorePage from "./components/store/StorePage";
-import Sidebar from "./Layout/Sidebar";
 import Homepage from "./Layout/Homepage";
-import LoginForm, { Login } from "./components/login/Login";
+import  LoginPage  from "./pages/LoginPage";
 
 function checkIsAdmin() {
-  const role = localStorage.getItem('isAdmin');
+  const role = localStorage.getItem("isAdmin");
   return role;
 }
 
@@ -49,34 +55,29 @@ function UserProfile() {
   return <h1>UserProfile</h1>;
 }
 
-
 const router = createBrowserRouter(
   createRoutesFromElements(
-    
-      <Route path="/" element={<Homepage />}>
-        <Route index element={<LoginForm />} />
-        <Route path="store" element={<StorePage />}/> 
-      
-        <Route path="admin" element={<ProtectedAdminRoute/>}>
-          <Route index element={<AdminDashboard />} /> 
-          <Route path="settings" element={<AdminSettings />} /> 
-          <Route path="reports" element={<AdminReports />} /> 
-        </Route>
+    <Route path="/" element={<Homepage />}>
+      <Route index element={<LoginPage />} />
+      <Route path="store" element={<StorePage />} />
 
-        <Route path="user" element={<ProtectedUserRoute/>}>
-          <Route index element={<UserDashboard />} /> 
-          <Route path="settings" element={<UserSettings />} /> 
-          <Route path="profile" element={<UserProfile />} /> 
-        </Route>
-
+      <Route path="admin" element={<ProtectedAdminRoute />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="settings" element={<AdminSettings />} />
+        <Route path="reports" element={<AdminReports />} />
       </Route>
+
+      <Route path="user" element={<ProtectedUserRoute />}>
+        <Route index element={<UserDashboard />} />
+        <Route path="settings" element={<UserSettings />} />
+        <Route path="profile" element={<UserProfile />} />
+      </Route>
+    </Route>
   )
 );
 
 function App() {
-  return (
-    <RouterProvider router={router}/>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
