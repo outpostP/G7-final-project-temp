@@ -1,8 +1,11 @@
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const db = require("../../models");
 require("dotenv").config({
   path: path.resolve("../.env"),
 });
+const users = db.User;
+const profiles = db.User_Profile;
 
 const verifyToken = async (req, res, next) => {
   let token = req.headers.authorization;
@@ -63,8 +66,26 @@ const verifyCashier = async (req, res, next) => {
   next();
 };
 
+const verifyCashierStatus = async (req, res, next) => {
+  const { username } = req.body;
+  const dataUser = await users.findOne({
+    where: { username: username },
+    include: [{ model: profiles }],
+  });
+  const userStatus = dataUser.User_Profile?.isActive;
+  const userRole = dataUser.isAdmin;
+  if (!userStatus && !userRole) {
+    return res.status(404).json({
+      error: "Unauthorized user",
+      message: "User not a cashier",
+    });
+  }
+  next();
+};
+
 module.exports = {
   verifyToken,
   verifyAdmin,
   verifyCashier,
+  verifyCashierStatus,
 };

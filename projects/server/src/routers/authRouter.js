@@ -5,9 +5,19 @@ const {
   validateLogin,
   validateRegistration,
 } = require("../middleware/validator");
-const { verifyToken, verifyAdmin } = require("../middleware/auth");
+const {
+  verifyToken,
+  verifyAdmin,
+  verifyCashierStatus,
+} = require("../middleware/auth");
 
-router.post("/login", validateLogin, validateRequest, authController.userLogin);
+router.post(
+  "/login",
+  validateLogin,
+  validateRequest,
+  verifyCashierStatus,
+  authController.userLogin
+);
 router.post(
   "/user",
   verifyToken,

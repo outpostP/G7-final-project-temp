@@ -10,6 +10,9 @@ const AuthController = {
         return authService.validationLoginFailed(res, 404, "User not found");
       }
 
+      const userId = userData.id;
+      const userCart = await commonService.findUserCart(userId);
+
       const validatePassword = await commonService.validatePassword(
         password,
         userData.password
@@ -24,11 +27,28 @@ const AuthController = {
       };
 
       const token = await authService.generateToken(payload);
-
-      return res.status(200).json({
-        success: "Login succeed",
-        data: { userData, token },
-      });
+      if (userCart) {
+        return res.status(200).json({
+          success: "Login succeed",
+          data: {
+            id: userData.id,
+            username: userData.username,
+            cartId: userCart.id,
+            isAdmin: userData.isAdmin,
+            token,
+          },
+        });
+      } else {
+        return res.status(200).json({
+          success: "Login succeed",
+          data: {
+            id: userData.id,
+            username: userData.username,
+            isAdmin: userData.isAdmin,
+            token,
+          },
+        });
+      }
     } catch (err) {
       return res.status(500).json({
         error: "Login failed",
@@ -57,7 +77,7 @@ const AuthController = {
       );
       return res.status(200).json({
         success: "Registration succeed",
-        data: { userData },
+        user: userData,
       });
     } catch (err) {
       return res.status(500).json({
