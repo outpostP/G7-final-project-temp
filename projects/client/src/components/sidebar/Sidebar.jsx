@@ -25,7 +25,7 @@ export const Sidebar = () => {
     toast({
       description: "Successfully logged out",
       status: "success",
-      duration: 2000,
+      duration: 5000,
       isClosable: true,
       position: "top",
     });

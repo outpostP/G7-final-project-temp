@@ -12,6 +12,7 @@ import {
 import StorePage from "./components/store/StorePage";
 import Homepage from "./Layout/Homepage";
 import LoginPage from "./pages/LoginPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function checkIsAdmin() {
   const role = JSON.parse(localStorage.getItem("isAdmin"));
@@ -58,6 +59,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<Homepage />}>
       <Route index element={<LoginPage />} />
       <Route path="store" element={<StorePage />} />
+      <Route path="reset-password/:token" element={<ResetPasswordPage />} />
 
       <Route path="admin" element={<ProtectedAdminRoute />}>
         <Route index element={<AdminDashboard />} />

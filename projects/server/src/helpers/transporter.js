@@ -23,7 +23,7 @@ const SendEmail = {
       <p>
             Please click the button below to reset your password.
       </p>
-      <a href="http://localhost:8000/auth/verify/${dataToken}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-align: center; text-decoration: none; display: block; width: 200px; margin: 20px auto;">
+      <a href="http://localhost:3000/reset-password/${dataToken}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-align: center; text-decoration: none; display: block; width: 200px; margin: 20px auto;">
             Verify Email
       </a>
       <p>

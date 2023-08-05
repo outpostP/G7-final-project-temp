@@ -19,19 +19,14 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { delay } from "framer-motion";
+import { ResetPasswordModal } from "./ForgotPassword";
 
 const baseUrl = "http://localhost:8000/";
 let dataUser;
 
 const LoginSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must have at least 6 characters")
-    .matches(/[0-9]/, "Password must have min 1 number")
-    .matches(/[A-Z]/, "Password must have min 1 capital character")
-    .matches(/[!@#$%^&*)(+=.,_-]/, "Password must have min 1 symbol"),
+  password: Yup.string().required("Password is required"),
 });
 
 const fetchUser = async (values) => {
@@ -59,12 +54,21 @@ export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
+  const [isResetPasswordModalOpen, setResetPasswordModalOpen] = useState(false);
+
+  const openResetPasswordModal = () => {
+    setResetPasswordModalOpen(true);
+  };
+
+  const closeResetPasswordModal = () => {
+    setResetPasswordModalOpen(false);
+  };
 
   const handleLoginToast = (props, content) => {
     toast({
       description: content,
       status: props,
-      duration: 2000,
+      duration: 5000,
       isClosable: true,
       position: "top",
     });
@@ -185,9 +189,17 @@ export const Login = () => {
                     )}
                   </FormControl>
                   <Stack spacing={6}>
-                    <Button variant={"link"} color={"blue.500"}>
+                    <Button
+                      onClick={openResetPasswordModal}
+                      variant={"link"}
+                      color={"blue.500"}
+                    >
                       Forgot Password?
                     </Button>
+                    <ResetPasswordModal
+                      isOpen={isResetPasswordModalOpen}
+                      onClose={closeResetPasswordModal}
+                    />
                     <Button type="submit" colorScheme="blue" variant="solid">
                       Sign in
                     </Button>
