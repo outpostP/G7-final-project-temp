@@ -61,7 +61,7 @@ export const AddCashierModal = ({ isOpen, onClose }) => {
   const [showPassword1, setShowPassword1] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const toast = useToast();
-  const dispatch= useDispatch()
+  const dispatch = useDispatch();
 
   const handleRegisterToast = (props, content) => {
     toast({
