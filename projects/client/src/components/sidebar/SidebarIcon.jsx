@@ -5,9 +5,14 @@ import { TbCategory } from "react-icons/tb";
 import { MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { BsPeople } from "react-icons/bs";
 import { TbReportAnalytics } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
 
 export const SidebarIcon = (isAdmin) => {
   const dataAdmin = JSON.parse(isAdmin.data);
+  const navigate = useNavigate();
+  const toEmployee = () => {
+    navigate("/admin/employee");
+  };
   if (dataAdmin) {
     return (
       <>
@@ -23,7 +28,7 @@ export const SidebarIcon = (isAdmin) => {
             </Button>
           </ListItem>
           <ListItem>
-            <Button w={"full"} variant="unstyled">
+            <Button w={"full"} variant="unstyled" onClick={toEmployee}>
               <Icon as={BsPeople} boxSize={10} />
             </Button>
           </ListItem>

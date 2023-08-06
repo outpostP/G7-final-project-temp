@@ -13,6 +13,7 @@ import StorePage from "./components/store/StorePage";
 import Homepage from "./Layout/Homepage";
 import LoginPage from "./pages/LoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import AdminEmployeePage from "./pages/AdminEmployeePage";
 
 function checkIsAdmin() {
   const role = JSON.parse(localStorage.getItem("isAdmin"));
@@ -34,8 +35,8 @@ function AdminDashboard() {
   return <h1>AdminDashboard</h1>;
 }
 
-function AdminSettings() {
-  return <h1>AdminSettings</h1>;
+function AdminEmployee() {
+  return <AdminEmployeePage />;
 }
 
 function AdminReports() {
@@ -63,7 +64,7 @@ const router = createBrowserRouter(
 
       <Route path="admin" element={<ProtectedAdminRoute />}>
         <Route index element={<AdminDashboard />} />
-        <Route path="settings" element={<AdminSettings />} />
+        <Route path="employee" element={<AdminEmployee />} />
         <Route path="reports" element={<AdminReports />} />
       </Route>
 

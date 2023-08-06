@@ -41,7 +41,7 @@ export const Sidebar = () => {
         <Flex h="full" flexDirection="column" alignItems="center">
           <Wrap pt="20px" pb="100px">
             <WrapItem>
-              <Button w={"full"} variant="unstyled" onClick={logout}>
+              <Button w={"full"} variant="unstyled">
                 <Avatar
                   size="xl"
                   name="Cashier Name"
