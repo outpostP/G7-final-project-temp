@@ -1,17 +1,25 @@
 const db = require('../../../models')
 const fs = require('fs');
+const path = require('path');
 const Transaction = db.Transaction;
+const TP = db.Transaction_Product;
 const Product = db.Products;
 const Category = db.Category;
 const Users = db.User;
 const Profile = db.User_Profile;
 const Cart = db.Cart;
-const Cartlist = db.Cart_Product;
+const Cart_Product = db.Cart_Product;
+
 
 
 async function getCategory(req, res)  {
+    try {
+        
         const category = await Category.findAll();
-        return res.status(200).json({data: category});
+        res.status(200).json({data: category});
+    } catch (error) {
+        res.status(500).json({message: 'error fetching categories'})
+    }
     };
 
 async function addCategory (req, res) {
@@ -244,7 +252,7 @@ const deleteCategory = async (req, res) => {
         if(req.file && req.file.path) {
             updateData.productImage = req.file.path;
         };
-        if (product.productImage && fs.existsSync(product.productImage)) {
+        if (updateData.productImage && product.productImage && fs.existsSync(product.productImage)) {
             fs.unlinkSync(product.productImage);
         };
         return db.sequelize.transaction(async (t) => {
@@ -265,30 +273,61 @@ const deleteCategory = async (req, res) => {
 
 const updateCart = async (req, res) => {
     const { cartId, productId, quantity } = req.body;
+  
+    try {
+      await db.sequelize.transaction(async (t) => {
+       
+          const existingItem = await Cart_Product.findOne({ where: { cartId, productId } }, { transaction: t });
+  
+          if (existingItem) {
+            // Item already exists, update its quantity
+            existingItem.quantity = quantity;
+            await existingItem.save({ transaction: t });
+            res.status(200).json({ message: 'Item updated successfully', item: existingItem });
+          } else {
+            // Item does not exist, create a new item in the cart
+            const newItem = await Cart_Product.create(
+              {
+                cartId,
+                productId,
+                quantity,
+                createdAt: new Date(), // Set the createdAt timestamp
+                updatedAt: new Date(), // Set the updatedAt timestamp
+              },
+              { transaction: t }
+            );
+  
+            res.status(201).json({ message: 'Item added to cart successfully', item: newItem });
+          }
+        
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'An error occurred while updating the cart' });
+    }
+  };
+  
+ async function deleteCartItems (req,res) {
+    const { cartId, productId } = req.body;
 
     try {
-        await db.sequelize.transaction(async (t) => {
-            const item = await Cart_Product.findOne({ where: { cartId, productId } }, { transaction: t });
-
-            if (!item) {
-                return res.status(404).json({ message: 'Item not found in cart' });
-            }
-
-            if (quantity > 0) {
-                item.quantity = quantity;
-                await item.save({ transaction: t });
-                res.status(200).json({ message: 'Item updated successfully', item });
-            } else {
-                await item.destroy({ transaction: t });
-                res.status(200).json({ message: 'Item removed successfully' });
-            }
-        });
+      await db.sequelize.transaction(async (t) => {
+        const existingItem = await Cart_Product.findOne({ where: { cartId, productId } });
+  
+        if (existingItem) {
+          await existingItem.destroy({ transaction: t });
+  
+          return res.status(200).json({ message: 'Item deleted from cart successfully' });
+        } else {
+          return res.status(404).json({ message: 'Item not found in cart' });
+        }
+      });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'An error occurred while updating or removing item' });
+      console.error(error);
+      return res.status(500).json({ message: 'An error occurred while deleting the item from cart' });
     }
-};
-
+  };
+  
 async function getCart(req, res) {
     const { cartId } = req.params;
   
@@ -323,5 +362,92 @@ async function getCart(req, res) {
   }
 }
 
+async function getCartItems (req,res) {
+    try {
+        const cartItems = await Cart_Product.findAll({
+          include: [Cart, Product] // Include both Cart and Product models in the query
+        });
+        // console.log(cartItems)
+        res.status(200).json(cartItems);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while fetching cart items' });
+      }
+};
 
-module.exports = {getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}
+async function cartTotal() {
+    try {
+      const carts = await Cart.findAll({
+        attributes: ["id", "userId", "totalPrice", "totalItem", [sequelize.fn('SUM', sequelize.col('Cart_Product.quantity')), 'totalProductQuantity']],
+        include: [{
+          model: Cart_Product,
+          attributes: []
+        }],
+        group: ["Cart.id"]
+      });
+  
+      // Each cart will have a property "totalProductQuantity" representing the sum of product quantities in that cart.
+      console.log(carts);
+    } catch (error) {
+      console.error("Error fetching carts:", error);
+    }
+}
+
+async function createTransaction (req,res) {
+    try {
+    const {userId, totalPrice, totalItem} = req.body;
+    return db.sequelize.transaction(async (t) => {
+        const addproduct = await TP.create(
+          {
+             userId: userId,
+             totalPrice: totalPrice,
+             totalItem: totalItem
+          },
+          { transaction: t }
+     );
+     res.status(200).json({ message: 'Pending transaction recorded successfully', data: addProduct });
+ });
+    }
+    catch (err) {
+        res.status(500).json({ message: 'An error occurred while creating transaction' })
+    }
+}
+
+async function getAllTransaction (req,res) {
+    try {
+        const tr = await Transaction.findAll({
+            include: [TP, Product]
+        })
+        res.status(200).json({data: tr})
+    } catch (error) {
+        res.status(500).json({message: 'error fetching transaction'})
+    }
+};
+
+async function getTransactionId (req, res) {
+    try {
+        const {id} = req.params;
+        const tr = await Transaction.findAll({
+            include: [
+                {
+                    model: TP,
+                    include: [{Product}]
+                }
+            ]
+        })
+    
+        res.status(200).json({data: tr})
+    } catch (error) {
+        res.status(500).json({message: 'error fetching transaction details'})
+    }
+}
+
+async function deleteCart(req, res) {
+    try {
+        
+    } catch (error) {
+        
+    }
+}
+
+module.exports = {deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}

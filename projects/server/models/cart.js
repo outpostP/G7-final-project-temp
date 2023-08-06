@@ -5,10 +5,12 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Cart extends Model {
     static associate(models) {
-      this.belongsTo(models.User, { foreignKey: "userId" });
+      this.belongsTo(models.User, { foreignKey: "userId" ,
+      onDelete: "SET NULL",});
       this.belongsToMany(models.Products, {
         through: "Cart_Product",
         foreignKey: "cartId",
+        onDelete: "SET NULL",
       });
     }
   }
