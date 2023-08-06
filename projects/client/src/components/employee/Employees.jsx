@@ -1,12 +1,9 @@
 import {
-  Avatar,
   Box,
   Button,
-  Switch,
   Table,
   TableContainer,
   Tbody,
-  Td,
   Th,
   Thead,
   Tr,
@@ -25,6 +22,7 @@ export const Employee = () => {
   const closeRegisterModal = () => {
     setRegisterModalOpen(false);
   };
+
   return (
     <>
       <Box padding={7}>

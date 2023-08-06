@@ -1,71 +1,40 @@
-const db = require("../../models");
 const { commonService, profileService } = require("../services");
 
 const ProfileController = {
-  updateUsername: async (req, res) => {
+  getAllCashier: async (req, res) => {
     try {
-      const { currentUsername, newUsername } = req.body;
-      const foundCurrentUsername = await commonService.findUser(
-        currentUsername
-      );
-      if (!foundCurrentUsername) {
-        return profileService.validationUsernameFailed(
-          res,
-          404,
-          "User not found"
-        );
-      }
+      const pageNumber = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.size) || 10;
+      const isAdmin = req.query.isAdmin ? JSON.parse(req.query.isAdmin) : false;
+      const sortBy = req.query.sort || "DESC";
+      const offset = (pageNumber - 1) * pageSize;
+      const searchUsername = req.query.searchByUsername;
 
-      const foundNewUsername = await commonService.findUser(newUsername);
-      if (foundNewUsername) {
-        return profileService.validationUsernameFailed(
+      const data = await profileService.getAllCashier(
+        pageSize,
+        offset,
+        sortBy,
+        searchUsername,
+        isAdmin
+      );
+      if (!data) {
+        return profileService.validationDataCashierFailed(
           res,
           400,
-          "New user exists"
+          "Failed to get data"
         );
       }
-
-      await profileService.updateNewUsername(
-        foundCurrentUsername.id,
-        newUsername
-      );
       return res.status(200).json({
-        success: "Update username succeed",
-        username: newUsername,
+        message: "Get All Cashier Succeed",
+        pageNumber,
+        pageSize,
+        sortBy,
+        searchUsername,
+        data,
       });
     } catch (err) {
-      return res.status(500).json({
-        error: "Update username failed",
-        message: err.message,
-      });
-    }
-  },
-
-  updateEmail: async (req, res) => {
-    try {
-      const { currentEmail, newEmail } = req.body;
-      const foundCurrentEmail = await commonService.findEmail(currentEmail);
-      if (!foundCurrentEmail) {
-        return profileService.validationEmailFailed(res, 404, "User not found");
-      }
-
-      const foundNewEmail = await commonService.findEmail(newEmail);
-      if (foundNewEmail) {
-        return profileService.validationEmailFailed(
-          res,
-          400,
-          "New user exists"
-        );
-      }
-
-      await profileService.updateNewEmail(foundCurrentEmail.id, newEmail);
-      return res.status(200).json({
-        success: "Update email succeed",
-        email: newEmail,
-      });
-    } catch (err) {
-      return res.status(500).json({
-        error: "Update email failed",
+      return res.status(err.statusCode || 500).json({
+        error: "Get All Cashier Failed",
         message: err.message,
       });
     }

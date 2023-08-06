@@ -20,6 +20,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { useDispatch } from "react-redux";
+import { getAllCashier } from "../../services/reducer/employeeReducer";
 
 const baseUrl = "http://localhost:8000/";
 const token = localStorage.getItem("token");
@@ -59,6 +61,7 @@ export const AddCashierModal = ({ isOpen, onClose }) => {
   const [showPassword1, setShowPassword1] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const toast = useToast();
+  const dispatch= useDispatch()
 
   const handleRegisterToast = (props, content) => {
     toast({
@@ -92,6 +95,7 @@ export const AddCashierModal = ({ isOpen, onClose }) => {
       const result = await registerNewCashier(request);
       if (result[0] === "success") {
         handleRegisterToast("success", "Successfully add new cashier");
+        dispatch(getAllCashier());
         onClose();
       } else {
         handleRegisterToast("error", "Failed add new cashier");
