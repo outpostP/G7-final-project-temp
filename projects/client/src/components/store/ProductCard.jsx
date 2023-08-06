@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { Box, Button, Text, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper } from '@chakra-ui/react';
 import axios from 'axios';
@@ -23,9 +24,6 @@ const ProductCard = ({ product, cartItems, onUpdateCartItems, setRefreshCart }) 
         quantity: quantity
       });
 
-      // console.log(response.data);
-
-      // After successfully updating the cart, trigger the parent component's fetchCartItems function
       onUpdateCartItems();
       setRefreshCart(true);
     } catch (error) {
