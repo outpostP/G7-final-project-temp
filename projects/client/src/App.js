@@ -12,6 +12,8 @@ import {
 import StorePage from "./components/store/StorePage";
 import Homepage from "./Layout/Homepage";
 import LoginPage from "./pages/LoginPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import AdminEmployeePage from "./pages/AdminEmployeePage";
 
 function checkIsAdmin() {
   const role = JSON.parse(localStorage.getItem("isAdmin"));
@@ -33,8 +35,8 @@ function AdminDashboard() {
   return <h1>AdminDashboard</h1>;
 }
 
-function AdminSettings() {
-  return <h1>AdminSettings</h1>;
+function AdminEmployee() {
+  return <AdminEmployeePage />;
 }
 
 function AdminReports() {
@@ -58,10 +60,11 @@ const router = createBrowserRouter(
     <Route path="/" element={<Homepage />}>
       <Route index element={<LoginPage />} />
       <Route path="store" element={<StorePage />} />
+      <Route path="reset-password/:token" element={<ResetPasswordPage />} />
 
       <Route path="admin" element={<ProtectedAdminRoute />}>
         <Route index element={<AdminDashboard />} />
-        <Route path="settings" element={<AdminSettings />} />
+        <Route path="employee" element={<AdminEmployee />} />
         <Route path="reports" element={<AdminReports />} />
       </Route>
 

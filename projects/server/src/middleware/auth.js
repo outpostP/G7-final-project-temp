@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const db = require("../../models");
+const { findEmail } = require("../services/commonService");
 require("dotenv").config({
   path: path.resolve("../.env"),
 });
@@ -77,7 +78,19 @@ const verifyCashierStatus = async (req, res, next) => {
   if (!userStatus && !userRole) {
     return res.status(404).json({
       error: "Unauthorized user",
-      message: "User not a cashier",
+      message: "User no longer active",
+    });
+  }
+  next();
+};
+const verifyUserExist = async (req, res, next) => {
+  const userEmail = req.user.email;
+  const dataUser = await findEmail(userEmail);
+  req.userReset = dataUser;
+  if (!dataUser) {
+    return res.status(404).json({
+      error: "Unauthorized user",
+      message: "User not found",
     });
   }
   next();
@@ -88,4 +101,5 @@ module.exports = {
   verifyAdmin,
   verifyCashier,
   verifyCashierStatus,
+  verifyUserExist,
 };

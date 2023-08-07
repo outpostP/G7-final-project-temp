@@ -84,9 +84,31 @@ const createNewCashier = async (username, email, password) => {
   }
 };
 
+const updatePassword = async (id, password) => {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt);
+    const result = await db.sequelize.transaction(async (t) => {
+      const userData = await users.update(
+        {
+          password: hashPassword,
+        },
+        { where: { id: id } },
+        { transaction: t }
+      );
+      return userData;
+    });
+    return result;
+  } catch (err) {
+    console.error("Error creating user:", err);
+    throw new Error("Failed to create user");
+  }
+};
+
 module.exports = {
   generateToken,
   validationLoginFailed,
   validationRegistrationFailed,
   createNewCashier,
+  updatePassword,
 };
