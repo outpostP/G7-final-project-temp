@@ -6,42 +6,45 @@ import ProductList from "./ProductList";
 import Cart from "./Cart";
 
 const StorePage = () => {
-  const [products, setProducts] = useState([]);
+ 
   const [cartItems, setCartItems] = useState([]);
   const [refreshCart, setRefreshCart] = useState(false);
 
-  const fetchProducts = async () => {
+  
+
+  const fetchCartItems = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/admin/product');
-      setProducts(response.data.data);
+      const response = await axios.get('http://localhost:8000/admin/cart/item');
+      setCartItems(response.data);
+      console.log(cartItems)
+      setRefreshCart(false); 
     } catch (error) {
       console.error(error);
     }
   };
+  console.log(cartItems)
+  useEffect(() => {
+    fetchCartItems();
+  }, [])
+  
+  useEffect(() => {
+    if (refreshCart) {
+      fetchCartItems();
+    }
+  }, [refreshCart]);
 
-        const fetchCartItems = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/admin/cart/item');
-                setCartItems(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchProducts();
-        fetchCartItems();
-    }, []);
-
-    return (
-        <Grid templateColumns="repeat(5, 1fr)" gap={6}>
-            <GridItem colSpan={3}>
-                <ProductList products={products} />
-            </GridItem>
-            <GridItem colSpan={2}>
-                <Cart cartItems={cartItems} />
-            </GridItem>
-        </Grid>
-    );
+  
+  
+  return (
+    <Grid templateColumns="repeat(5, 1fr)" gap={6}>
+      <GridItem colSpan={3}>
+        <ProductList setCartItems={setCartItems} setRefreshCart={setRefreshCart} />
+      </GridItem>
+      <GridItem colSpan={2}>
+        <Cart cartItems={cartItems} />
+      </GridItem>
+    </Grid>
+  );
 };
 
 export default StorePage;

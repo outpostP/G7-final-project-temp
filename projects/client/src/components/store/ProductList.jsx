@@ -79,70 +79,73 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
 
   return (
     <>
-      <Flex direction="column" align="center" mt={4}>
-        <Box mb={4}>
-          <Input
-            placeholder="Search"
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-        </Box>
-        <Flex mb={4}>
-          <Select placeholder="All Categories" onChange={handleCategoryChange}>
-            <option value={0}>All Categories</option>
-            {categories.map((category) => (
-              <option value={category.id} key={category.id}>
-                {category.categoryName}
-              </option>
-            ))}
-          </Select>
-          <Button ml={2} onClick={toggleSortOrder}>
-            Sort {sortOrder === "desc" ? "Descending" : "Ascending"}
-          </Button>
-        </Flex>
-        <SimpleGrid columns={3} spacing={10}>
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onUpdateCartItems={handleCartUpdate}
-              setCartItems={setCartItems}
-            />
+    <Flex direction="column" align="center" mt={4}>
+      <Box mb={4}>
+        <Input
+          placeholder="Search"
+          value={searchQuery}
+          onChange={handleSearch}
+        />
+      </Box>
+      <Flex mb={4}>
+        <Select
+          placeholder="All Categories"
+          onChange={handleCategoryChange}
+        >
+          <option value={0}>All Categories</option>
+          {categories.map((category) => (
+            <option value={category.id} key={category.id}>
+              {category.categoryName}
+            </option>
           ))}
-        </SimpleGrid>
-        {totalPage > 1 && (
-          <Flex mt={4} alignItems="center">
+        </Select>
+        <Button ml={2} onClick={toggleSortOrder}>
+          Sort {sortOrder === 'desc' ? 'Descending' : 'Ascending'}
+        </Button>
+      </Flex>
+      <SimpleGrid columns={3} spacing={10}>
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            onUpdateCartItems={handleCartUpdate}
+            setCartItems={setCartItems}
+          />
+        ))}
+      </SimpleGrid>
+      {totalPage > 1 && (
+        <Flex mt={4} alignItems="center">
+          <Button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            colorScheme="teal"
+            mr={2}
+          >
+            Previous
+          </Button>
+          {Array.from({ length: totalPage }, (_, index) => (
             <Button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              colorScheme="teal"
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              colorScheme={currentPage === index + 1 ? 'teal' : 'gray'}
               mr={2}
             >
-              Previous
+              {index + 1}
             </Button>
-            {Array.from({ length: totalPage }, (_, index) => (
-              <Button
-                key={index + 1}
-                onClick={() => handlePageChange(index + 1)}
-                colorScheme={currentPage === index + 1 ? "teal" : "gray"}
-                mr={2}
-              >
-                {index + 1}
-              </Button>
-            ))}
-            <Button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPage}
-              colorScheme="teal"
-              ml={2}
-            >
-              Next
-            </Button>
-          </Flex>
-        )}
-      </Flex>
-    </>
-  );
+          ))}
+          <Button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPage}
+            colorScheme="teal"
+            ml={2}
+          >
+            Next
+          </Button>
+        </Flex>
+      )}
+    </Flex>
+  </>
+);
 };
 
 export default ProductList;

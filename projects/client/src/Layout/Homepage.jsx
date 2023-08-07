@@ -4,7 +4,7 @@ import { Box } from "@chakra-ui/react";
 const Homepage = () => {
   return (
     <Box display="flex">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <Box flex="1">
         <Outlet />
       </Box>

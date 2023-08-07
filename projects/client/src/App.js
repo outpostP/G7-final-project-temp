@@ -98,82 +98,17 @@ const router = createBrowserRouter(
       <Route index element={<LoginPage />} />
       <Route path="reset-password/:token" element={<ResetPassword />} />
       <Route path="admin" element={<ProtectedAdminRoute />}>
-        <Route
-          index
-          element={
-            <ProtectedRoute>
-              <AdminEmployee />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="products"
-          element={
-            <ProtectedRoute>
-              <ProductLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route
-            index
-            element={
-              <ProtectedRoute>
-                <ProductTable />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="add"
-            element={
-              <ProtectedRoute>
-                <ProductAdd />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path=":id"
-            element={
-              <ProtectedRoute>
-                <ProductList />
-              </ProtectedRoute>
-            }
-            loader={currentProductLoader}
-          />
+        <Route index element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} /> 
+          <Route path="products" element={<ProtectedRoute><ProductLayout /></ProtectedRoute>} > 
+          <Route index element={<ProtectedRoute><ProductTable /></ProtectedRoute>} /> 
+          <Route path="add" element={<ProtectedRoute><ProductAdd /></ProtectedRoute>}  /> 
+          <Route path=":id" element={<ProtectedRoute><ProductList /></ProtectedRoute>} loader={currentProductLoader}/> 
         </Route>
-        <Route
-          path="reports"
-          element={
-            <ProtectedRoute>
-              <ReportLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route
-            index
-            element={
-              <ProtectedRoute>
-                <AdminReportAll />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="unpaid"
-            element={
-              <ProtectedRoute>
-                <TransactionUnpaid />{" "}
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path=":id"
-            element={
-              <ProtectedRoute>
-                <TransactionList />{" "}
-              </ProtectedRoute>
-            }
-            loader={currentTransactionLoader}
-          />
-        </Route>
+        <Route path="reports" element={<ProtectedRoute><ReportLayout /></ProtectedRoute>}>
+          <Route index element={<ProtectedRoute><AdminReportAll /></ProtectedRoute>} /> 
+          <Route path="unpaid" element={<ProtectedRoute><TransactionUnpaid />  </ProtectedRoute>} /> 
+          <Route path=":id" element={<ProtectedRoute><TransactionList />  </ProtectedRoute>} loader={currentTransactionLoader} /> 
+      </Route>
       </Route>
       <Route path="user" element={<ProtectedUserRoute />}>
         <Route
