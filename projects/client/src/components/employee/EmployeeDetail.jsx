@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllCashier } from "../../services/reducer/employeeReducer";
 import { UpdateCashierModal } from "./UpdateCashier";
 import { ResetPasswordModal } from "./ChangePassword";
+import { ChangeAvatar } from "./ChangeAvatar";
 import axios from "axios";
 
 const baseUrl = "http://localhost:8000/";
@@ -90,10 +91,6 @@ export const EmployeeDetail = () => {
     }));
   };
 
-  const getImage = (image) => {
-    return `${baseUrl}${image}`;
-  };
-
   useEffect(() => {
     dispatch(getAllCashier());
   }, [dispatch]);
@@ -113,13 +110,7 @@ export const EmployeeDetail = () => {
         <Tr key={item.id}>
           <Td>{index + 1}</Td>
           <Td>
-            <Button variant="unstyled">
-              <Avatar
-                size="md"
-                name={item.username}
-                src={`${baseUrl}${item.User_Profile.avatar}`}
-              />
-            </Button>
+            <ChangeAvatar item={item} />
           </Td>
           <Td>{item.username}</Td>
           <Td>{item.email}</Td>

@@ -1,40 +1,84 @@
-import React, { useState } from "react";
-import {
-  Avatar,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Stack,
-} from "@chakra-ui/react";
+import React, { useEffect } from "react";
+import { Box, Avatar, FormControl, useToast } from "@chakra-ui/react";
+import { useFormik } from "formik";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { getAllCashier } from "../../services/reducer/employeeReducer";
 
-export const ProfileAvatar = (item) => {
-  const [avatarUrl, setAvatarUrl] = useState(item.User_Profile.avatar);
-  const [selectedFile, setSelectedFile] = useState(null);
+const baseUrl = "http://localhost:8000/";
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Assuming you have a function to handle file uploads and get the new avatar URL
-      // This is just an example implementation, you should replace it with your own logic
-      //   uploadAvatar(file)
-      // .then((newAvatarUrl) => {
-      //   setAvatarUrl(newAvatarUrl);
-      // })
-      // .catch((error) => {
-      //   console.error("Error uploading avatar:", error);
-      // });
+const uploadAvatar = async (formData) => {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.post(`${baseUrl}profile/avatar`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return ["success", response];
+  } catch (err) {
+    console.log(err.message);
+    return "error";
+  }
+};
+
+export const ChangeAvatar = ({ item }) => {
+  const dispatch = useDispatch();
+  const toast = useToast();
+
+  const handleToast = (props, content) => {
+    toast({
+      description: content,
+      status: props,
+      duration: 3000,
+      isClosable: true,
+      position: "top",
+    });
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      file: null,
+    },
+  });
+
+  const handleFileChange = async (e) => {
+    const file = await e.currentTarget.files[0];
+    await formik.setFieldValue("file", file);
+    const formData = new FormData();
+    formData.append("cashierId", JSON.stringify(item.id));
+    formData.append("avatar", file);
+    const result = await uploadAvatar(formData);
+    if (result) {
+      handleToast("success", "Successfully change avatar");
+      dispatch(getAllCashier());
+    } else {
+      handleToast("error", "Failed change avatar");
     }
   };
 
   return (
-    <Stack spacing={4}>
-      <Avatar size="md" name={item.username} src={avatarUrl} />
-      <FormControl>
-        <FormLabel>Change Avatar</FormLabel>
-        <Input type="file" accept="image/*" onChange={handleFileChange} />
-      </FormControl>
-      {/* Other components */}
-    </Stack>
+    <Box>
+      <form onSubmit={formik.handleSubmit}>
+        <FormControl>
+          <Box textAlign="left">
+            <label>
+              <input
+                id="image"
+                type="file"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+              />
+              <Avatar
+                size="md"
+                name={item.username}
+                src={`${baseUrl}${item.User_Profile.avatar}`}
+                cursor="pointer"
+              />
+            </label>
+          </Box>
+        </FormControl>
+      </form>
+    </Box>
   );
 };
