@@ -9,24 +9,12 @@ const { Op } = require("sequelize");
 const users = db.User;
 const profiles = db.User_Profile;
 
-const updateNewUsername = async (userId, newUsername) => {
+const updateUsernameEmail = async (userId, username, email) => {
   const result = await db.sequelize.transaction(async (t) => {
     return await users.update(
       {
-        username: newUsername,
-      },
-      { where: { id: userId } },
-      { transaction: t }
-    );
-  });
-  return result;
-};
-
-const updateNewEmail = async (userId, newEmail) => {
-  const result = await db.sequelize.transaction(async (t) => {
-    return await users.update(
-      {
-        email: newEmail,
+        username: username,
+        email: email,
       },
       { where: { id: userId } },
       { transaction: t }
@@ -157,8 +145,7 @@ const validationAvatarFailed = async (res, statusCode, message) => {
 };
 
 module.exports = {
-  updateNewUsername,
-  updateNewEmail,
+  updateUsernameEmail,
   validationDataCashierFailed,
   validationPasswordFailed,
   updateNewPassword,

@@ -73,8 +73,8 @@ const verifyCashierStatus = async (req, res, next) => {
     where: { username: username },
     include: [{ model: profiles }],
   });
-  const userStatus = dataUser.User_Profile?.isActive;
-  const userRole = dataUser.isAdmin;
+  const userStatus = dataUser?.User_Profile?.isActive;
+  const userRole = dataUser?.isAdmin;
   if (!userStatus && !userRole) {
     return res.status(404).json({
       error: "Unauthorized user",

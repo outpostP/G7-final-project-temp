@@ -1,6 +1,7 @@
 require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const { join } = require("path");
 
@@ -27,10 +28,12 @@ const db = require("../models");
 //routes
 const { authRouter, profileRouter, adminRouter } = require("./routers");
 
+app.use("/public", express.static(path.resolve(__dirname, "../public")));
+
 //middleware
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
-app.use('/admin', adminRouter);
+app.use("/admin", adminRouter);
 
 // ===========================
 
