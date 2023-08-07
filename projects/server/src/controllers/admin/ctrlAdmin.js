@@ -9,6 +9,7 @@ const Users = db.User;
 const Profile = db.User_Profile;
 const Cart = db.Cart;
 const Cart_Product = db.Cart_Product;
+const { Op } = require("sequelize");
 
 
 
@@ -152,22 +153,127 @@ async function createProfile(id, transaction) {
         throw new Error("Failed to create user's profile");
     }
 }
-
+// `http://localhost:8000/${product.productImage}`
 async function getProduct(req, res){
     try {
-        const product = await Product.findAll({
-            include : [
-                {
-                    model: Category,
-                }
-            ]
+        console.log(req.query)
+        const { page, limit, offset } = getPaginationParams(req);
+        const where = buildProductFilter(req);
+        const order = getProductSortOrder(req);
+  
+        const totalProducts = await Product.count({ where });
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        const size = (function() {
+            if (totalPages > limit) {
+                return limit;
+            } else {
+                return totalPages;
+            }
+        })();
+        console.log(size)
+  
+        const products = await getProductsAndInclude(where, order, offset, limit);
+  
+        return res.status(200).json({
+            message: "Products fetched successfully",
+            data: {
+                totalPages: totalPages,
+                page: page,
+                pageSize: size,
+                products: products,
+            }
         });
-        return res.status(200).json({message:' fetching succeed', data: product});
+    } catch (err) {
+        return res.status(500).json({ message: 'Fetching products failed' });
     }
-    catch (err) {
-        return res.status(500).json({message: err.message});
-    };
+}
+
+async function getProductAdmin(req, res){
+    try {
+        console.log(req.query)
+        const { page, limit, offset } = getPaginationParams(req);
+        const where = buildProductFilterAdmin(req);
+        const order = getProductSortOrder(req);
+  
+        const totalProducts = await Product.count({ where });
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        const size = (function() {
+            if (totalPages > limit) {
+                return limit;
+            } else {
+                return totalPages;
+            }
+        })();
+        console.log(size)
+  
+        const products = await getProductsAndInclude(where, order, offset, limit);
+  
+        return res.status(200).json({
+            message: "Products fetched successfully",
+            data: {
+                totalPages: totalPages,
+                page: page,
+                pageSize: size,
+                products: products,
+            }
+        });
+    } catch (err) {
+        return res.status(500).json({ message: 'Fetching products failed' });
+    }
+}
+
+const getPaginationParams = (req) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    return { page, limit, offset };
 };
+
+const buildProductFilter = (req) => {
+    const { id_category, productName } = req.query;
+    const where = { isActive: true };
+    if (id_category) {
+        where.categoryId = id_category; // <- Update the column name to 'categoryId'
+    }
+    if (productName) {
+        where.productName = { [Op.like]: `%${productName}%` };
+    }
+    return where;
+};
+
+const buildProductFilterAdmin = (req) => {
+    const { id_category, productName } = req.query;
+    const where = { };
+    if (id_category) {
+        where.categoryId = id_category; // <- Update the column name to 'categoryId'
+    }
+    if (productName) {
+        where.productName = { [Op.like]: `%${productName}%` };
+    }
+    return where;
+};
+
+const getProductSortOrder = (req) => {
+    const sort = req.query.sort || 'desc';
+    return sort === 'asc' ? [['createdAt', 'ASC']] : [['createdAt', 'DESC']];
+};
+
+const getProductsAndInclude = async (where, order, offset, limit) => {
+    const includeOptions = [
+        { model: Category },
+    ];
+
+    return await Product.findAll({
+        where,
+        order,
+        offset,
+        limit,
+        include: includeOptions,
+    });
+};
+
 
 async function addProduct(req,res){
     try {
@@ -194,7 +300,9 @@ async function addProduct(req,res){
 async function getProductId(req, res) {
     try {
     const { id } = req.params;
-    const product = await Product.findByPk(id);
+    const product = await Product.findByPk(id, {
+        include: Category // Include the Category model
+    });
 
     if (!product) {
         return res.json({ error: 'Product not found' });
@@ -393,55 +501,128 @@ async function cartTotal() {
     }
 }
 
-async function createTransaction (req,res) {
-    try {
-    const {userId, totalPrice, totalItem} = req.body;
-    return db.sequelize.transaction(async (t) => {
-        const addproduct = await TP.create(
-          {
-             userId: userId,
-             totalPrice: totalPrice,
-             totalItem: totalItem
-          },
-          { transaction: t }
-     );
-     res.status(200).json({ message: 'Pending transaction recorded successfully', data: addProduct });
- });
-    }
-    catch (err) {
-        res.status(500).json({ message: 'An error occurred while creating transaction' })
-    }
-}
 
-async function getAllTransaction (req,res) {
+  async function createTransaction(req, res) {
     try {
-        const tr = await Transaction.findAll({
-            include: [TP, Product]
-        })
-        res.status(200).json({data: tr})
+        await db.sequelize.transaction(async (t) => {
+            const cartItemsObject = req.body;
+            const cartItems = cartItemsObject.cartItems; // Extract the cartItems array
+
+            // Calculate totalItem and totalPrice
+            let totalItem = 0;
+            let totalPrice = 0;
+
+            for (const item of cartItems) {
+                totalItem += item.quantity;
+                totalPrice += item.quantity * item.Product.productPrice;
+            }
+
+            // Create a new Transaction entry
+            const transaction = await Transaction.create(
+                {
+                    userId: cartItems[0].Cart.userId,
+                    totalPrice: totalPrice,
+                    totalItem: totalItem,
+                    // other fields
+                },
+                { transaction: t } // Associate the transaction with the Sequelize transaction
+            );
+
+            // Create Transaction_Product entries for each cart item
+            for (const item of cartItems) {
+                await TP.create(
+                    {
+                        transactionId: transaction.id,
+                        productId: item.Product.id,
+                        productPrice: item.Product.productPrice,
+                        quantity: item.quantity,
+                        // other fields
+                    },
+                    { transaction: t } // Associate the transaction with the Sequelize transaction
+                );
+            }
+        });
+
+        res.status(201).json({ message: 'Cart items sent successfully' });
     } catch (error) {
-        res.status(500).json({message: 'error fetching transaction'})
+        console.error('Error sending cart:', error);
+        res.status(500).json({ error: 'An error occurred' });
     }
-};
+  };
+  
+    
 
-async function getTransactionId (req, res) {
+  async function getAllTransaction(req, res) {
     try {
-        const {id} = req.params;
-        const tr = await Transaction.findAll({
+       const { startDate, endDate } = req.query;
+ 
+       let whereClause = { isPaid: true};
+       if (startDate && endDate) {
+          whereClause = {
+             createdAt: {
+                [Op.between]: [new Date(startDate), new Date(endDate)],
+             },
+          };
+       }
+ 
+       const tr = await Transaction.findAll({
+          include: [TP, Product],
+          where: whereClause,
+       });
+ 
+       res.status(200).json({ data: tr });
+    } catch (error) {
+       res.status(500).json({ message: 'Error fetching transactions' });
+    }
+ }
+ 
+ async function getAllUnpaidTransaction(req, res) {
+    try {
+       const { startDate, endDate } = req.query;
+ 
+       let whereClause = { isPaid: false};
+       if (startDate && endDate) {
+          whereClause = {
+             createdAt: {
+                [Op.between]: [new Date(startDate), new Date(endDate)],
+             },
+          };
+       }
+ 
+       const tr = await Transaction.findAll({
+          include: [TP, Product],
+          where: whereClause,
+       });
+ 
+       res.status(200).json({ data: tr });
+    } catch (error) {
+       res.status(500).json({ message: 'Error fetching transactions' });
+    }
+ }
+
+async function getTransactionId(req, res) {
+    try {
+        const { id } = req.params;
+        const transaction = await Transaction.findByPk(id, {
             include: [
                 {
                     model: TP,
-                    include: [{Product}]
+                    include: [{ model: Product }]
                 }
             ]
-        })
-    
-        res.status(200).json({data: tr})
+        });
+
+        if (!transaction) {
+            res.status(404).json({ error: 'Transaction not found' });
+            return;
+        }
+
+        res.status(200).json({ data: transaction });
     } catch (error) {
-        res.status(500).json({message: 'error fetching transaction details'})
+        console.error(error); // Log the error for debugging purposes
+        res.status(500).json({ error: 'An error occurred' });
     }
 }
-
 async function deleteCart(req, res) {
     try {
         
@@ -450,4 +631,4 @@ async function deleteCart(req, res) {
     }
 }
 
-module.exports = {deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}
+module.exports = {getAllUnpaidTransaction,getProductAdmin,deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}

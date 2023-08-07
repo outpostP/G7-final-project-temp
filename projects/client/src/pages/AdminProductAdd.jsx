@@ -1,12 +1,10 @@
 /* eslint-disable react/jsx-no-duplicate-props */
 import { Box, Table, Thead, Tbody, Tr, Th, Td, TableCaption, FormControl,Select, FormLabel, Input, Button } from "@chakra-ui/react";
-import { useLoaderData, useParams } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
-const ProductList = () => {
-  const { id } = useParams();
-  const product = useLoaderData(currentProductLoader, { params: { id } });
+const ProductAdd = () => {
+
   const [formData, setFormData] = useState({});
   const fileInputRef = useRef(null);
   const [categories, setCategories] = useState([]);
@@ -47,11 +45,10 @@ const ProductList = () => {
       formDataToSend.append("file", fileInputRef.current.files[0]);
     }
 
-    // Append the _method parameter to simulate PATCH request
-    // formDataToSend.append("_method", "PATCH");
+    
 
     try {
-      const response = await axios.patch(`http://localhost:8000/admin/product/${id}`, formDataToSend, {
+      const response = await axios.post('http://localhost:8000/admin/product', formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -78,33 +75,7 @@ const ProductList = () => {
 
   return (
     <div>
-      <Table variant="striped" colorScheme="teal">
-        <TableCaption>Product List</TableCaption>
-        <Thead>
-          <Tr>
-            <Th>Product Name</Th>
-            <Th>Product Price</Th>
-            <Th>Category</Th>
-            <Th>Status</Th>
-            <Th>Image</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          <Tr>
-            <Td>{product.productName}</Td>
-            <Td>${product.productPrice}</Td>
-            <Td>{product.Category.categoryName}</Td>
-            <Td>{product.isActive ? 'Yes' : 'No'}</Td>
-            <Td>
-              <Box width="100px" height="100px">
-                <img src={`http://localhost:8000/${product.productImage}`} alt={product.productName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </Box>
-            </Td>
-          </Tr>
-        </Tbody>
-      </Table>
-
-      <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+           <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
         <FormControl>
           <FormLabel>Product Name</FormLabel>
           <Input type="text" name="productName" value={formData.productName || ''} onChange={handleChange} />
@@ -134,12 +105,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
-
-export const currentProductLoader = async ({ params }) => {
-  const { id } = params;
-
-  const res = await fetch(`http://localhost:8000/admin/product/${id}`);
-
-  return res.json();
-};
+export default ProductAdd;

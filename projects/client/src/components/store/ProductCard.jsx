@@ -19,7 +19,7 @@ const ProductCard = ({ product, cartItems, onUpdateCartItems, setRefreshCart }) 
         productId: product.id,
         quantity: quantity
       });
-
+      console.log(response)
       onUpdateCartItems();
       setRefreshCart(true);
     } catch (error) {

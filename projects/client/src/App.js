@@ -6,8 +6,16 @@ import StorePage from "./components/store/StorePage";
 // import Sidebar from "./Layout/Sidebar";
 import Homepage from "./Layout/Homepage";
 import LoginForm from "./components/login/Login";
+import AdminReportAll from './pages/AdminReportAll'
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ProductTable from "./pages/AdminProductAll";
+import TransactionList, {currentTransactionLoader, transactionId} from "./pages/AdminReportPage";
+import ReportLayout from "./Layout/reports";
+import ProductList, { currentProductLoader, productId } from "./pages/AdminProductPage";
+import ProductAdd from "./pages/AdminProductAdd";
+import ProductLayout from "./Layout/AdminProducts";
+import TransactionUnpaid from "./pages/AdminReportUnpaid";
 
 function checkIsAdmin() {
   const role = localStorage.getItem('isAdmin');
@@ -87,8 +95,16 @@ const router = createBrowserRouter(
       <Route index element={<LoginForm />} />
       <Route path="admin" element={<ProtectedAdminRoute />}>
         <Route index element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} /> 
-        <Route path="settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} /> 
-        <Route path="reports" element={<ProtectedRoute><AdminReports /></ProtectedRoute>} /> 
+          <Route path="products" element={<ProtectedRoute><ProductLayout /></ProtectedRoute>} > 
+          <Route index element={<ProtectedRoute><ProductTable /></ProtectedRoute>} /> 
+          <Route path="add" element={<ProtectedRoute><ProductAdd /></ProtectedRoute>}  /> 
+          <Route path=":id" element={<ProtectedRoute><ProductList /></ProtectedRoute>} loader={currentProductLoader}/> 
+        </Route>
+        <Route path="reports" element={<ProtectedRoute><ReportLayout /></ProtectedRoute>}>
+          <Route index element={<ProtectedRoute><AdminReportAll /></ProtectedRoute>} /> 
+          <Route path="unpaid" element={<ProtectedRoute><TransactionUnpaid />  </ProtectedRoute>} /> 
+          <Route path=":id" element={<ProtectedRoute><TransactionList />  </ProtectedRoute>} loader={currentTransactionLoader} /> 
+      </Route>
       </Route>
       <Route path="user" element={<ProtectedUserRoute />}>
         <Route index element={<ProtectedRoute><StorePage /></ProtectedRoute>} /> 

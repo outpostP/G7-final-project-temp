@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "transactionId",
         onDelete: "NO ACTION",
       });
+      this.hasMany(models.Transaction_Product, { // Change this line
+        foreignKey: "transactionId",
+        onDelete: "NO ACTION",
+      });
+    
     }
   }
   Transaction.init(
