@@ -2,31 +2,11 @@ const router = require("express").Router();
 const { profileController } = require("../controllers");
 const {
   validateRequest,
-  validateUpdateUsername,
-  validateUpdateEmail,
   validateUpdatePassword,
   validateUpdateStatus,
 } = require("../middleware/validator");
 const { verifyToken, verifyAdmin } = require("../middleware/auth");
 const { multerUpload } = require("../middleware/multer");
-
-router.patch(
-  "/username",
-  verifyToken,
-  verifyAdmin,
-  validateUpdateUsername,
-  validateRequest,
-  profileController.updateUsername
-);
-
-router.patch(
-  "/email",
-  verifyToken,
-  verifyAdmin,
-  validateUpdateEmail,
-  validateRequest,
-  profileController.updateEmail
-);
 
 router.patch(
   "/password",
@@ -51,6 +31,13 @@ router.post(
   verifyToken,
   multerUpload.single("avatar"),
   profileController.updateAvatar
+);
+
+router.get(
+  "/allcashier",
+  verifyToken,
+  verifyAdmin,
+  profileController.getAllCashier
 );
 
 module.exports = router;

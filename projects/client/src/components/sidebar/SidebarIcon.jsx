@@ -1,43 +1,41 @@
 import React from "react";
-import {
-  Avatar,
-  Box,
-  Flex,
-  Icon,
-  List,
-  ListItem,
-  Spacer,
-  Text,
-  Wrap,
-  WrapItem,
-} from "@chakra-ui/react";
-import {
-  IoFastFoodOutline,
-  IoSettingsOutline,
-  IoLogOutOutline,
-} from "react-icons/io5";
-
+import { Button, Icon, List, ListItem } from "@chakra-ui/react";
+import { IoFastFoodOutline } from "react-icons/io5";
 import { TbCategory } from "react-icons/tb";
 import { MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { BsPeople } from "react-icons/bs";
 import { TbReportAnalytics } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
 
 export const SidebarIcon = (isAdmin) => {
-  if (isAdmin.data) {
+  const dataAdmin = JSON.parse(isAdmin.data);
+  const navigate = useNavigate();
+  const toEmployee = () => {
+    navigate("/admin/employee");
+  };
+  if (dataAdmin) {
     return (
       <>
-        <List spacing="20px">
+        <List spacing="25px">
           <ListItem>
-            <Icon as={TbCategory} boxSize={10} />
+            <Button w={"full"} variant="unstyled">
+              <Icon as={TbCategory} boxSize={10} />
+            </Button>
           </ListItem>
           <ListItem>
-            <Icon as={MdOutlineProductionQuantityLimits} boxSize={10} />
+            <Button w={"full"} variant="unstyled">
+              <Icon as={MdOutlineProductionQuantityLimits} boxSize={10} />
+            </Button>
           </ListItem>
           <ListItem>
-            <Icon as={BsPeople} boxSize={10} />
+            <Button w={"full"} variant="unstyled" onClick={toEmployee}>
+              <Icon as={BsPeople} boxSize={10} />
+            </Button>
           </ListItem>
           <ListItem>
-            <Icon as={TbReportAnalytics} boxSize={10} />
+            <Button w={"full"} variant="unstyled">
+              <Icon as={TbReportAnalytics} boxSize={10} />
+            </Button>
           </ListItem>
         </List>
       </>
@@ -47,7 +45,9 @@ export const SidebarIcon = (isAdmin) => {
       <>
         <List spacing="20px">
           <ListItem>
-            <Icon as={IoFastFoodOutline} boxSize={10} />
+            <Button w={"full"} variant="unstyled">
+              <Icon as={IoFastFoodOutline} boxSize={10} />
+            </Button>
           </ListItem>
         </List>
       </>

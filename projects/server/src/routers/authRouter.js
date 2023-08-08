@@ -4,10 +4,23 @@ const {
   validateRequest,
   validateLogin,
   validateRegistration,
+  validateForgotPassword,
+  validateResetPassword,
 } = require("../middleware/validator");
-const { verifyToken, verifyAdmin } = require("../middleware/auth");
+const {
+  verifyToken,
+  verifyAdmin,
+  verifyCashierStatus,
+  verifyUserExist,
+} = require("../middleware/auth");
 
-router.post("/login", validateLogin, validateRequest, authController.userLogin);
+router.post(
+  "/login",
+  validateLogin,
+  validateRequest,
+  verifyCashierStatus,
+  authController.userLogin
+);
 router.post(
   "/user",
   verifyToken,
@@ -15,6 +28,20 @@ router.post(
   validateRegistration,
   validateRequest,
   authController.createCashier
+);
+router.put(
+  "/forgotpass",
+  validateForgotPassword,
+  validateRequest,
+  authController.forgotPassword
+);
+router.patch(
+  "/resetpass",
+  validateResetPassword,
+  validateRequest,
+  verifyToken,
+  verifyUserExist,
+  authController.resetPassword
 );
 
 module.exports = router;
