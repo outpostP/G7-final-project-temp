@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Avatar, FormControl, useToast } from "@chakra-ui/react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getAllCashier } from "../../services/reducer/employeeReducer";
 
 const baseUrl = "http://localhost:8000/";
@@ -22,6 +22,7 @@ const uploadAvatar = async (formData) => {
 };
 
 export const ChangeAvatar = ({ item }) => {
+  const page = useSelector((state) => state.dataEmployee.currentPage);
   const dispatch = useDispatch();
   const toast = useToast();
 
@@ -43,7 +44,7 @@ export const ChangeAvatar = ({ item }) => {
     const result = await uploadAvatar(formData);
     if (result) {
       handleToast("success", "Successfully change avatar");
-      dispatch(getAllCashier());
+      dispatch(getAllCashier(page));
     } else {
       handleToast("error", "Failed change avatar");
     }

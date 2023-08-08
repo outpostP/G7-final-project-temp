@@ -17,7 +17,7 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getAllCashier } from "../../services/reducer/employeeReducer";
 
 const baseUrl = "http://localhost:8000/";
@@ -46,6 +46,7 @@ const UpdateSchema = Yup.object().shape({
 });
 
 export const UpdateCashierModal = ({ isOpen, onClose, item }) => {
+  const page = useSelector((state) => state.dataEmployee.currentPage);
   const toast = useToast();
   const dispatch = useDispatch();
 
@@ -78,7 +79,7 @@ export const UpdateCashierModal = ({ isOpen, onClose, item }) => {
       const result = await updateCashier(request);
       if (result[0] === "success") {
         handleToast("success", "Successfully update cashier");
-        dispatch(getAllCashier());
+        dispatch(getAllCashier(page));
         onClose();
       } else {
         handleToast("error", "Failed update cashier");

@@ -1,4 +1,6 @@
 const { commonService, profileService } = require("../services");
+const db = require("../../models");
+const users = db.User;
 
 const ProfileController = {
   getAllCashier: async (req, res) => {
@@ -24,12 +26,17 @@ const ProfileController = {
           "Failed to get data"
         );
       }
+      const totalEmployee = await users.count({ where: { isAdmin: false } });
+      const totalPages = Math.ceil(totalEmployee / pageSize);
+      console.log(totalPages);
+
       return res.status(200).json({
         message: "Get All Cashier Succeed",
         pageNumber,
         pageSize,
         sortBy,
         searchUsername,
+        totalPages,
         data,
       });
     } catch (err) {

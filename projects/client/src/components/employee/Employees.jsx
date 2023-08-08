@@ -4,16 +4,24 @@ import {
   Table,
   TableContainer,
   Tbody,
+  Center,
   Th,
   Thead,
   Tr,
+  Flex,
 } from "@chakra-ui/react";
 import { EmployeeDetail } from "./EmployeeDetail";
 import { AddCashierModal } from "./AddCashier";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllCashier } from "../../services/reducer/employeeReducer";
 
 export const Employee = () => {
+  const result = useSelector((state) => state.dataEmployee.totalPage);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPage = result;
+  const dispatch = useDispatch();
 
   const openRegisterModal = () => {
     setRegisterModalOpen(true);
@@ -23,10 +31,20 @@ export const Employee = () => {
     setRegisterModalOpen(false);
   };
 
+  useEffect(() => {
+    dispatch(getAllCashier(currentPage));
+  }, [currentPage]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPage) {
+      setCurrentPage(newPage);
+    }
+  };
+
   return (
     <>
-      <Box padding={7}>
-        <Button colorScheme="blue" onClick={openRegisterModal}>
+      <Box padding={5}>
+        <Button colorScheme="teal" onClick={openRegisterModal}>
           Add Cashier
         </Button>
         <AddCashierModal
@@ -38,7 +56,7 @@ export const Employee = () => {
         <Table
           size={{ base: "sm", md: "md" }}
           variant="striped"
-          colorScheme="blue"
+          colorScheme="teal"
         >
           <Thead>
             <Tr>
@@ -70,6 +88,38 @@ export const Employee = () => {
           </Tbody>
         </Table>
       </TableContainer>
+      <Center>
+        {totalPage > 1 && (
+          <Flex m={4} alignItems="center">
+            <Button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              colorScheme="teal"
+              mr={2}
+            >
+              Previous
+            </Button>
+            {Array.from({ length: totalPage }, (_, index) => (
+              <Button
+                key={index + 1}
+                onClick={() => handlePageChange(index + 1)}
+                colorScheme={currentPage === index + 1 ? "teal" : "gray"}
+                mr={2}
+              >
+                {index + 1}
+              </Button>
+            ))}
+            <Button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPage}
+              colorScheme="teal"
+              ml={2}
+            >
+              Next
+            </Button>
+          </Flex>
+        )}
+      </Center>
     </>
   );
 };
