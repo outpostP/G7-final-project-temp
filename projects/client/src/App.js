@@ -9,9 +9,9 @@ import LoginForm from "./components/login/Login";
 import AdminReportAll from './pages/AdminReportAll'
 import { useEffect } from 'react';
 import ProductTable from "./pages/AdminProductAll";
-import TransactionList, {currentTransactionLoader, transactionId} from "./pages/AdminReportPage";
+import TransactionList, {currentTransactionLoader} from "./pages/AdminReportPage";
 import ReportLayout from "./Layout/reports";
-import ProductList, { currentProductLoader, productId } from "./pages/AdminProductPage";
+import ProductList, { currentProductLoader } from "./pages/AdminProductPage";
 import ProductAdd from "./pages/AdminProductAdd";
 import ProductLayout from "./Layout/AdminProducts";
 import TransactionUnpaid from "./pages/AdminReportUnpaid";

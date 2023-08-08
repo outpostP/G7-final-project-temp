@@ -8,11 +8,18 @@ const LineChart = ({ transactions }) => {
 
   useEffect(() => {
     const generateLineChart = () => {
-      const chartLabels = transactions.map((transaction) =>
-        format(new Date(transaction.createdAt), 'yyyy-MM-dd HH:mm:ss')
-      );
-      const chartData = transactions.map((transaction) => transaction.totalPrice);
-
+      const groupedTransactions = transactions.reduce((acc, transaction) => {
+        const date = format(new Date(transaction.createdAt), 'yyyy-MM-dd');
+        if (!acc[date]) {
+          acc[date] = 0;
+        }
+        acc[date] += transaction.totalPrice;
+        return acc;
+      }, {});
+    
+      const chartLabels = Object.keys(groupedTransactions);
+      const chartData = Object.values(groupedTransactions);
+    
       const chartConfig = {
         type: 'line',
         data: {
@@ -34,18 +41,17 @@ const LineChart = ({ transactions }) => {
           },
         },
       };
-
+    
       if (chartRef.current) {
         // Destroy the previous chart instance if it exists
         if (chartInstance.current) {
           chartInstance.current.destroy();
         }
-
+    
         // Create a new chart instance
         chartInstance.current = new Chart(chartRef.current, chartConfig);
       }
     };
-
     generateLineChart();
 
     // Cleanup: Destroy the chart instance when the component unmounts
