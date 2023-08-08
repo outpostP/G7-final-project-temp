@@ -440,13 +440,14 @@ const deleteCategory = async (req, res) => {
   async function updateProduct(req,res){
     try {
         const {id} = req.params;
-        const {productname, productprice, productdes, category}  = req.body;
+        const {productname, productprice, productdes, category, status}  = req.body;
         const product = await Product.findByPk(id)
         let updateData = {
             productName: productname,
             productPrice: productprice,
             productDescription: productdes,
-            categoryId: category
+            categoryId: category,
+            isActive: status
         };
         if(req.file && req.file.path) {
             updateData.productImage = req.file.path;
@@ -461,7 +462,7 @@ const deleteCategory = async (req, res) => {
                     where: {id : id}
                 },
                 { transaction: t }
-            );
+            ); 
             res.status(200).json({ message: 'Product updated successfully', product: updateData });
         });
     }
@@ -714,12 +715,37 @@ async function getTransactionId(req, res) {
         res.status(500).json({ error: 'An error occurred' });
     }
 }
-async function deleteCart(req, res) {
+async function resetCart(req, res) {
     try {
-        
-    } catch (error) {
-        
-    }
+        const {id} = req.params
+        await db.sequelize.transaction(async (t) => {
+            // Reset values in the Cart model
+            await Cart.update(
+              {
+                totalPrice: 0,
+                totalItem: 0,
+              },
+              {
+                where: { id: id },
+                transaction: t, // associate the query with the transaction
+              }
+            );
+      
+            // Delete all Cart_Product records with the Cart id
+            await Cart_Product.destroy({
+              where: { cartId: id },
+              transaction: t, // associate the query with the transaction
+            });
+      
+            // Commit the transaction
+            await t.commit();
+      
+            res.status(200).json({ message: 'Cart deleted successfully.' });
+          });
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ message: 'Internal server error.' });
+        }
 }
 
-module.exports = {getCategoryFree,getAllUnpaidTransaction,getProductAdmin,deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}
+module.exports = {resetCart, getCategoryFree,getAllUnpaidTransaction,getProductAdmin,deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}

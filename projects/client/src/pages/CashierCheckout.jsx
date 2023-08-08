@@ -4,22 +4,32 @@ import axios from 'axios';
 
 const CheckOut = () => {
 const [cartItems, setCartItems] = useState([]);
-const [refreshCart, setRefreshCart] = useState(false);
+const [cart, setCart] = useState()
 
 const fetchCartItems = async () => {
   try {
     const response = await axios.get('http://localhost:8000/admin/cart/item');
     setCartItems(response.data);
     console.log(cartItems)
-    setRefreshCart(false); 
   } catch (error) {
     console.error(error);
   }
 };
+
+const handleCancel = async (id) => {
+    try {
+        await axios
+    } catch (error) {
+        
+    }
+}
+
 console.log(cartItems)
+
 useEffect(() => {
   fetchCartItems();
 }, [])
+
 
     return (
         <>

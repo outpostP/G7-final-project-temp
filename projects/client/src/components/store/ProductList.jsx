@@ -15,7 +15,7 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const url = "http://localhost:8000/admin/cate";
+      const url = 'http://localhost:8000/admin/cateall';
       const response = await axios.get(url);
       setCategories(response.data.data);
     };

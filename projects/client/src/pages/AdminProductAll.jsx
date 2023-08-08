@@ -22,6 +22,20 @@ const ProductTable = () => {
   }, []);
 
   useEffect(() => {
+    const fetchProduct = async () => {
+      try{
+        const response = await axios.get('http://localhost:8000/admin/productA');
+        const { data } = response.data;
+        setProducts(data.products);
+      }
+      catch (err) {
+        console.log(err);
+      }
+    }
+    fetchProduct()
+  },[])
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         let url = `http://localhost:8000/admin/productA?&sort=${sortOrder}&productName=${searchQuery}&page=${currentPage}`;
@@ -31,7 +45,7 @@ const ProductTable = () => {
         }
 
         const response = await axios.get(url);
-        const { data, totalPages } = response.data;
+        const { data } = response.data;
         setProducts(data.products);
         setTotalPage(data.totalPages);
       } catch (error) {
@@ -40,7 +54,7 @@ const ProductTable = () => {
     };
 
     fetchData();
-  }, [categoryId, currentPage, searchQuery, sortOrder]);
+  }, [categoryId, currentPage, searchQuery, sortOrder,]);
 
   const handleCategoryChange = (event) => {
     const selectedCategoryId = parseInt(event.target.value, 10);
