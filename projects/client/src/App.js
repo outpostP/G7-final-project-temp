@@ -76,22 +76,6 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-function AdminDashboard() {
-  return <h1>AdminDashboard</h1>;
-}
-
-function UserDashboard() {
-  return <h1>UserDashboard</h1>;
-}
-
-function UserSettings() {
-  return <h1>UserSettings</h1>;
-}
-
-function UserProfile() {
-  return <h1>UserProfile</h1>;
-}
-
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Homepage />}>
@@ -102,7 +86,7 @@ const router = createBrowserRouter(
           index
           element={
             <ProtectedRoute>
-              <AdminDashboard />
+              <AdminEmployee />
             </ProtectedRoute>
           }
         />
@@ -139,7 +123,6 @@ const router = createBrowserRouter(
             }
             loader={currentProductLoader}
           />
-          <Route path="employee" element={<AdminEmployee />} />
         </Route>
         <Route
           path="reports"
@@ -182,30 +165,6 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute>
               <StorePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="board"
-          element={
-            <ProtectedRoute>
-              <UserDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="settings"
-          element={
-            <ProtectedRoute>
-              <UserSettings />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="profile"
-          element={
-            <ProtectedRoute>
-              <UserProfile />
             </ProtectedRoute>
           }
         />
