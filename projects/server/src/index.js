@@ -27,8 +27,6 @@ app.use("/", express.static(path.resolve(__dirname, "../")));
 //routes
 const { authRouter, profileRouter, adminRouter } = require("./routers");
 
-app.use("/public", express.static(path.resolve(__dirname, "../public")));
-
 //middleware
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
