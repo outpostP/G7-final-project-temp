@@ -12,14 +12,45 @@ const Cart_Product = db.Cart_Product;
 const { Op } = require("sequelize");
 const { Op } = require("sequelize");
 
-async function getCategory(req, res) {
-  try {
-    const category = await Category.findAll();
-    res.status(200).json({ data: category });
-  } catch (error) {
-    res.status(500).json({ message: "error fetching categories" });
-  }
+async function getCategoryFree(req,res) {
+    try {
+        const category = await Category.findAll();
+        res.status(200).json({data: category});
+    } catch (error) {
+        res.status(500).json({message: 'error fetching categories'})
 }
+}
+
+async function getCategory(req, res)  {
+    try {
+        const { page, limit, offset } = getPaginationParams(req);
+        const totalCategory = await Category.count();
+      
+        const totalPages = Math.ceil(totalCategory / limit);
+
+        const size = (function() {
+            if (totalPages > limit) {
+                return limit;
+            } else {
+                return totalPages;
+            }
+        })();
+
+        const category = await Category.findAll({
+            limit: limit,
+            offset: offset
+        })
+        console.log(category)
+        res.status(200).json({data: {
+            totalPages: totalPages,
+            page: page,
+            pageSize: size,
+            category: category,
+        }});
+    } catch (error) {
+        res.status(500).json({message: 'error fetching categories'})
+    }
+    };
 
 async function addCategory (req, res) {
     try {
@@ -290,6 +321,7 @@ const getPaginationParams = (req) => {
   return { page, limit, offset };
 };
 
+
 const buildProductFilter = (req) => {
   const { id_category, productName } = req.query;
   const where = { isActive: true };
@@ -331,419 +363,29 @@ const getProductsAndInclude = async (where, order, offset, limit) => {
   });
 };
 
-async function addProduct(req, res) {
-  try {
-    const { productname, productprice, productdes, category } = req.body;
-    return db.sequelize.transaction(async (t) => {
-      const addproduct = await Product.create(
-        {
-          productName: productname,
-          productPrice: productprice,
-          productDescription: productdes,
-          productImage: req.file.path,
-          categoryId: category,
-        },
-        { transaction: t }
-      );
-      res
-        .status(200)
-        .json({ message: "Product added successfully", category: addproduct });
-    });
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-}
 
-async function getProductId(req, res) {
-  try {
-    const { id } = req.params;
-    const product = await Product.findByPk(id, {
-      include: Category, // Include the Category model
-    });
 
-    if (!product) {
-      return res.json({ error: "Product not found" });
+async function addProduct(req,res){
+    try {
+        const {productname, productprice, productdes, category}  = req.body;
+        return db.sequelize.transaction(async (t) => {
+            const addproduct = await Product.create(
+              {
+                 productName: productname,
+                 productPrice: productprice,
+                 productDescription: productdes,
+                 productImage: req.file.path,
+                 categoryId: category
+              },
+              { transaction: t }
+         );
+         res.status(200).json({ message: 'Product added successfully', category: addproduct });
+     });
     }
-
-    return res.json(product);
-  } catch (err) {
-    return res.status(500).json({ message: err });
-  }
-}
-
-async function getCategoryId(req, res) {
-  try {
-    const { id } = req.params;
-    const category = await Category.findByPk(id);
-
-    if (!category) {
-      return res.json({ error: "Category not found" });
-    }
-
-    return res.json(category);
-  } catch (err) {
-    return res.status(500).json({ message: err });
-  }
-}
-
-const deleteCategory = async (req, res) => {
-  const category_id = req.params.id;
-  try {
-    await Product.update(
-      { category_id: null },
-      {
-        where: { id: category_id },
-      }
-    );
-
-    await Category.destroy({ where: { category_id: category_id } });
-
-    res
-      .status(200)
-      .send(
-        `Category ${category_id} was deleted successfully and all related products were set to category_id NULL.`
-      );
-  } catch (error) {
-    res.status(500).send("Could not delete category. Error: " + error);
-  }
-};
-
-async function updateProduct(req, res) {
-  try {
-    const { id } = req.params;
-    const { productname, productprice, productdes, category } = req.body;
-    const product = await Product.findByPk(id);
-    let updateData = {
-      productName: productname,
-      productPrice: productprice,
-      productDescription: productdes,
-      categoryId: category,
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({message: err.message});
     };
-    if (req.file && req.file.path) {
-      updateData.productImage = req.file.path;
-    }
-    if (
-      updateData.productImage &&
-      product.productImage &&
-      fs.existsSync(product.productImage)
-    ) {
-      fs.unlinkSync(product.productImage);
-    }
-    return db.sequelize.transaction(async (t) => {
-      const updateprod = await Product.update(
-        updateData,
-        {
-          where: { id: id },
-        },
-        { transaction: t }
-      );
-      res
-        .status(200)
-        .json({ message: "Product updated successfully", product: updateData });
-    });
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-}
-
-const updateCart = async (req, res) => {
-  const { cartId, productId, quantity } = req.body;
-
-  try {
-    await db.sequelize.transaction(async (t) => {
-      const existingItem = await Cart_Product.findOne(
-        { where: { cartId, productId } },
-        { transaction: t }
-      );
-
-      if (existingItem) {
-        // Item already exists, update its quantity
-        existingItem.quantity = quantity;
-        await existingItem.save({ transaction: t });
-        res
-          .status(200)
-          .json({ message: "Item updated successfully", item: existingItem });
-      } else {
-        // Item does not exist, create a new item in the cart
-        const newItem = await Cart_Product.create(
-          {
-            cartId,
-            productId,
-            quantity,
-            createdAt: new Date(), // Set the createdAt timestamp
-            updatedAt: new Date(), // Set the updatedAt timestamp
-          },
-          { transaction: t }
-        );
-
-        res
-          .status(201)
-          .json({ message: "Item added to cart successfully", item: newItem });
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while updating the cart" });
-  }
-};
-
-async function deleteCartItems(req, res) {
-  const { cartId, productId } = req.body;
-
-  try {
-    await db.sequelize.transaction(async (t) => {
-      const existingItem = await Cart_Product.findOne({
-        where: { cartId, productId },
-      });
-
-      if (existingItem) {
-        await existingItem.destroy({ transaction: t });
-
-        return res
-          .status(200)
-          .json({ message: "Item deleted from cart successfully" });
-      } else {
-        return res.status(404).json({ message: "Item not found in cart" });
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred while deleting the item from cart" });
-  }
-}
-
-async function getCart(req, res) {
-  const { cartId } = req.params;
-
-  try {
-    const cart = await Cart.findByPk(cartId);
-
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
-
-    res.json(cart);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching the cart" });
-  }
-}
-
-async function login(req, res) {
-  const { username, password } = req.body;
-  const user = await Users.findOne({ where: { username } });
-
-  if (!user) {
-    return res.status(401).json({ error: "Invalid username or password" });
-  }
-
-  const cart = await Cart.findOne({ where: { userId: user.id } });
-
-  if (user.isAdmin) {
-    res.json({ userId: user.id, isAdmin: true });
-  } else {
-    res.json({ userId: user.id, cartId: cart.id, isAdmin: false });
-  }
-}
-
-async function getCartItems(req, res) {
-  try {
-    const cartItems = await Cart_Product.findAll({
-      include: [Cart, Product], // Include both Cart and Product models in the query
-    });
-    // console.log(cartItems)
-    res.status(200).json(cartItems);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching cart items" });
-  }
-}
-
-async function cartTotal() {
-  try {
-    const carts = await Cart.findAll({
-      attributes: [
-        "id",
-        "userId",
-        "totalPrice",
-        "totalItem",
-        [
-          sequelize.fn("SUM", sequelize.col("Cart_Product.quantity")),
-          "totalProductQuantity",
-        ],
-      ],
-      include: [
-        {
-          model: Cart_Product,
-          attributes: [],
-        },
-      ],
-      group: ["Cart.id"],
-    });
-
-    // Each cart will have a property "totalProductQuantity" representing the sum of product quantities in that cart.
-    console.log(carts);
-  } catch (error) {
-    console.error("Error fetching carts:", error);
-  }
-}
-
-async function createTransaction(req, res) {
-  try {
-    await db.sequelize.transaction(async (t) => {
-      const cartItemsObject = req.body;
-      const cartItems = cartItemsObject.cartItems; // Extract the cartItems array
-
-      // Calculate totalItem and totalPrice
-      let totalItem = 0;
-      let totalPrice = 0;
-
-      for (const item of cartItems) {
-        totalItem += item.quantity;
-        totalPrice += item.quantity * item.Product.productPrice;
-      }
-
-      // Create a new Transaction entry
-      const transaction = await Transaction.create(
-        {
-          userId: cartItems[0].Cart.userId,
-          totalPrice: totalPrice,
-          totalItem: totalItem,
-          // other fields
-        },
-        { transaction: t } // Associate the transaction with the Sequelize transaction
-      );
-
-      // Create Transaction_Product entries for each cart item
-      for (const item of cartItems) {
-        await TP.create(
-          {
-            transactionId: transaction.id,
-            productId: item.Product.id,
-            productPrice: item.Product.productPrice,
-            quantity: item.quantity,
-            // other fields
-          },
-          { transaction: t } // Associate the transaction with the Sequelize transaction
-        );
-      }
-    });
-
-    res.status(201).json({ message: "Cart items sent successfully" });
-  } catch (error) {
-    console.error("Error sending cart:", error);
-    res.status(500).json({ error: "An error occurred" });
-  }
-}
-
-async function getAllTransaction(req, res) {
-  try {
-    const { startDate, endDate } = req.query;
-
-    let whereClause = { isPaid: true };
-    if (startDate && endDate) {
-      whereClause = {
-        createdAt: {
-          [Op.between]: [new Date(startDate), new Date(endDate)],
-        },
-      };
-    }
-
-    const tr = await Transaction.findAll({
-      include: [TP, Product],
-      where: whereClause,
-    });
-
-    res.status(200).json({ data: tr });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching transactions" });
-  }
-}
-
-async function getAllUnpaidTransaction(req, res) {
-  try {
-    const { startDate, endDate } = req.query;
-
-    let whereClause = { isPaid: false };
-    if (startDate && endDate) {
-      whereClause = {
-        createdAt: {
-          [Op.between]: [new Date(startDate), new Date(endDate)],
-        },
-      };
-    }
-
-    const tr = await Transaction.findAll({
-      include: [TP, Product],
-      where: whereClause,
-    });
-
-    res.status(200).json({ data: tr });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching transactions" });
-  }
-}
-
-async function getTransactionId(req, res) {
-  try {
-    const { id } = req.params;
-    const transaction = await Transaction.findByPk(id, {
-      include: [
-        {
-          model: TP,
-          include: [{ model: Product }],
-        },
-      ],
-    });
-
-    if (!transaction) {
-      res.status(404).json({ error: "Transaction not found" });
-      return;
-    }
-
-    res.status(200).json({ data: transaction });
-  } catch (error) {
-    console.error(error); // Log the error for debugging purposes
-    res.status(500).json({ error: "An error occurred" });
-  }
-}
-async function deleteCart(req, res) {
-  try {
-  } catch (error) {}
-}
-
-module.exports = {
-  getAllUnpaidTransaction,
-  getProductAdmin,
-  deleteCartItems,
-  createTransaction,
-  getAllTransaction,
-  getTransactionId,
-  cartTotal,
-  getCartItems,
-  getCart,
-  login,
-  updateProduct,
-  updateCart,
-  getCategory,
-  addCategory,
-  getAdmin,
-  getCashierAll,
-  addCashier,
-  getProduct,
-  addProduct,
-  updateCategory,
-  deleteCategory,
-  getCategoryId,
-  getProductId,
 };
 
 async function getProductId(req, res) {
@@ -787,7 +429,7 @@ const deleteCategory = async (req, res) => {
         where: { id: category_id }
       });
   
-      await Category.destroy({ where: { category_id: category_id } });
+      await Category.destroy({ where: { id: category_id } });
     
       res.status(200).send(`Category ${category_id} was deleted successfully and all related products were set to category_id NULL.`);
     } catch (error) {
@@ -1080,4 +722,4 @@ async function deleteCart(req, res) {
     }
 }
 
-module.exports = {getAllUnpaidTransaction,getProductAdmin,deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}
+module.exports = {getCategoryFree,getAllUnpaidTransaction,getProductAdmin,deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}

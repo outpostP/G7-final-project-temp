@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import LineChart from './LineChart';
+import { FaLink } from 'react-icons/fa'
 
 const TransactionList = () => {
    const [transactions, setTransactions] = useState([]);
@@ -93,6 +94,14 @@ const TransactionList = () => {
                         <Td>{transaction.totalItem}</Td>
                         <Td>{transaction.isPaid ? 'Yes' : 'No'}</Td>
                         <Td>{format(new Date(transaction.createdAt), 'yyyy-MM-dd HH:mm:ss')}</Td>
+                        <Td>
+      <button
+          onClick={() => { window.location.href = transaction.id.toString() }}
+          style={{ fontSize: '12px', padding: '4px 8px', display: 'flex', alignItems: 'center' }}
+        >
+          <FaLink style={{ marginRight: '4px' }} />
+        </button>
+      </Td>
                      </Tr>
                   ))}
                </Tbody>
