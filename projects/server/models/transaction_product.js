@@ -4,13 +4,15 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Transaction_Product extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of DataTypes lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Transaction, {
+        foreignKey: "transactionId",
+        onDelete: "NO ACTION", // Set the ON DELETE behavior to CASCADE for Transaction
+      });
+      this.belongsTo(models.Products, {
+        foreignKey: "productId",
+        onDelete: "NO ACTION", // Set the ON DELETE behavior to CASCADE for Products
+      });
     }
   }
   Transaction_Product.init(

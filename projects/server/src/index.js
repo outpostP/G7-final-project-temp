@@ -2,7 +2,6 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-
 const { join } = require("path");
 
 const PORT = process.env.PORT || 8000;
@@ -18,13 +17,13 @@ app.use(
 
 app.use(express.json());
 const db = require("../models");
-// db.sequelize.sync({});
+// db.sequelize.sync({ alter: true });
 
 //#region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
-
+app.use("/", express.static(path.resolve(__dirname, "../")));
 //routes
 const { authRouter, profileRouter, adminRouter } = require("./routers");
 

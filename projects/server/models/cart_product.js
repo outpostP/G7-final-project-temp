@@ -5,7 +5,10 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Cart_Product extends Model {
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Cart, { foreignKey: "cartId" ,
+      onDelete: "NO ACTION",});
+      this.belongsTo(models.Products, { foreignKey: "productId",
+      onDelete: "NO ACTION", });
     }
   }
   Cart_Product.init(

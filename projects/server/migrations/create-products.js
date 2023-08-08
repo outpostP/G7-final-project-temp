@@ -27,7 +27,6 @@ module.exports = {
       },
       categoryId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
       },
       isActive: {
         type: Sequelize.BOOLEAN,

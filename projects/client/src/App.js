@@ -1,77 +1,173 @@
-// import axios from "axios";
-// import logo from "./logo.svg";
 import "./App.css";
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
-  Navigate,
   Outlet,
 } from "react-router-dom";
 import StorePage from "./components/store/StorePage";
 import Homepage from "./Layout/Homepage";
+import AdminReportAll from "./pages/AdminReportAll";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import ProductTable from "./pages/AdminProductAll";
+import TransactionList, {
+  currentTransactionLoader,
+  transactionId,
+} from "./pages/AdminReportPage";
+import ReportLayout from "./Layout/reports";
+import ProductList, {
+  currentProductLoader,
+  productId,
+} from "./pages/AdminProductPage";
+import ProductAdd from "./pages/AdminProductAdd";
+import ProductLayout from "./Layout/AdminProducts";
+import TransactionUnpaid from "./pages/AdminReportUnpaid";
 import LoginPage from "./pages/LoginPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import AdminEmployeePage from "./pages/AdminEmployeePage";
+import ResetPassword from "./pages/ResetPasswordPage";
+import AdminEmployee from "./pages/AdminEmployeePage";
 
 function checkIsAdmin() {
-  const role = JSON.parse(localStorage.getItem("isAdmin"));
-  return role;
+  const role = localStorage.getItem("isAdmin");
+  return role === "true";
 }
 
 function ProtectedAdminRoute() {
+  const navigate = useNavigate();
   const isAdmin = checkIsAdmin();
-  return isAdmin ? <Outlet /> : <Navigate to="/" />;
+
+  useEffect(() => {
+    if (!isAdmin) {
+      navigate("/user");
+    }
+  }, [isAdmin, navigate]);
+
+  return <Outlet />;
 }
 
-// ProtectedRoute for non-admin users
 function ProtectedUserRoute() {
+  const navigate = useNavigate();
   const isAdmin = checkIsAdmin();
-  return !isAdmin ? <Outlet /> : <Navigate to="/" />;
+
+  useEffect(() => {
+    if (isAdmin) {
+      navigate("/admin");
+    }
+  }, [isAdmin, navigate]);
+
+  return <Outlet />;
 }
 
-function AdminDashboard() {
-  return <h1>AdminDashboard</h1>;
+function checkIsAuthenticated() {
+  const token = localStorage.getItem("token");
+  return token !== null;
 }
 
-function AdminEmployee() {
-  return <AdminEmployeePage />;
-}
+function ProtectedRoute({ children }) {
+  const navigate = useNavigate();
+  const isAuthenticated = checkIsAuthenticated();
 
-function AdminReports() {
-  return <h1>AdminReports</h1>;
-}
+  if (!isAuthenticated) {
+    navigate("/login");
+    return null;
+  }
 
-function UserDashboard() {
-  return <h1>UserDashboard</h1>;
-}
-
-function UserSettings() {
-  return <h1>UserSettings</h1>;
-}
-
-function UserProfile() {
-  return <h1>UserProfile</h1>;
+  return children;
 }
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Homepage />}>
       <Route index element={<LoginPage />} />
-      <Route path="store" element={<StorePage />} />
-      <Route path="reset-password/:token" element={<ResetPasswordPage />} />
-
+      <Route path="reset-password/:token" element={<ResetPassword />} />
       <Route path="admin" element={<ProtectedAdminRoute />}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="employee" element={<AdminEmployee />} />
-        <Route path="reports" element={<AdminReports />} />
+        <Route
+          index
+          element={
+            <ProtectedRoute>
+              <AdminEmployee />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="products"
+          element={
+            <ProtectedRoute>
+              <ProductLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <ProductTable />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="add"
+            element={
+              <ProtectedRoute>
+                <ProductAdd />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path=":id"
+            element={
+              <ProtectedRoute>
+                <ProductList />
+              </ProtectedRoute>
+            }
+            loader={currentProductLoader}
+          />
+        </Route>
+        <Route
+          path="reports"
+          element={
+            <ProtectedRoute>
+              <ReportLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <AdminReportAll />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="unpaid"
+            element={
+              <ProtectedRoute>
+                <TransactionUnpaid />{" "}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path=":id"
+            element={
+              <ProtectedRoute>
+                <TransactionList />{" "}
+              </ProtectedRoute>
+            }
+            loader={currentTransactionLoader}
+          />
+        </Route>
       </Route>
-
       <Route path="user" element={<ProtectedUserRoute />}>
-        <Route index element={<UserDashboard />} />
-        <Route path="settings" element={<UserSettings />} />
-        <Route path="profile" element={<UserProfile />} />
+        <Route
+          index
+          element={
+            <ProtectedRoute>
+              <StorePage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
     </Route>
   )

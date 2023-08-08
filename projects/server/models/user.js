@@ -5,9 +5,12 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      this.hasOne(models.User_Profile, { foreignKey: "userId" });
-      this.hasOne(models.Cart, { foreignKey: "userId" });
-      this.hasMany(models.Transaction, { foreignKey: "userId" });
+      this.hasOne(models.User_Profile, { foreignKey: "userId",
+      onDelete: "CASCADE" });
+      this.hasOne(models.Cart, { foreignKey: "userId",
+      onDelete: "CASCADE" });
+      this.hasMany(models.Transaction, { foreignKey: "userId",
+      onDelete: "NO ACTION" });
     }
   }
   User.init(
