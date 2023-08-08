@@ -10,7 +10,7 @@ const Profile = db.User_Profile;
 const Cart = db.Cart;
 const Cart_Product = db.Cart_Product;
 const { Op } = require("sequelize");
-const { Op } = require("sequelize");
+
 
 async function getCategoryFree(req,res) {
     try {

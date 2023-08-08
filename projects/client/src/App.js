@@ -4,7 +4,7 @@ import {
   createRoutesFromElements,
  useNavigate, Route,
   RouterProvider,
- Redirect, Outlet,
+Outlet,
 } from "react-router-dom";
 import StorePage from "./components/store/StorePage";
 import Homepage from "./Layout/Homepage";
@@ -72,27 +72,25 @@ function ProtectedUserRoute() {
     return children;
   }
 
-function AdminDashboard() {
-  return <h1>AdminDashboard</h1>;
-}
 
-function ProtectedRoute({ children }) {
-  const navigate = useNavigate();
-  const isAuthenticated = checkIsAuthenticated();
 
-  if (!isAuthenticated) {
-    navigate("/login");
-    return null;
-  }
+// function ProtectedRoute({ children }) {
+//   const navigate = useNavigate();
+//   const isAuthenticated = checkIsAuthenticated();
 
-  return children;
-}
+//   if (!isAuthenticated) {
+//     navigate("/login");
+//     return null;
+//   }
+
+//   return children;
+// }
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Homepage />}>
-      <Route index element={<LoginPage />} />
-      <Route path="reset-password/:token" element={<ResetPassword />} />
+      <Route index element={<LoginForm />} />
+      {/* <Route path="reset-password/:token" element={<ResetPassword />} /> */}
       <Route path="admin" element={<ProtectedAdminRoute />}>
         <Route index element={<ProtectedRoute><AdminLayout /></ProtectedRoute>} /> 
         <Route path="reports" element={<ProtectedRoute><ReportLayout /></ProtectedRoute>}>
@@ -129,4 +127,4 @@ function App() {
   return <RouterProvider router={router} />;
 }
 
-export default App;
+export default App

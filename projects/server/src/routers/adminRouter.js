@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {getCategory,login, getCashierAll, addCategory, addCashier,updateProduct, getProduct, addProduct, updateCategory, getCart, updateCart, getCartItems, cartTotal, deleteCartItems, createTransaction, getTransactionId, getAllTransaction, getProductId, getProductAdmin, getAllUnpaidTransaction, getCategoryFree, getCategoryId, deleteCategory, resetCart} = require('../controllers/admin/ctrlAdmin');
+const {getCategory, addCategory, addCashier,updateProduct, getProduct, addProduct, updateCategory, getCart, updateCart, getCartItems, cartTotal, deleteCartItems, createTransaction, getTransactionId, getAllTransaction, getProductId, getProductAdmin, getAllUnpaidTransaction, getCategoryFree, getCategoryId, deleteCategory, resetCart} = require('../controllers/admin/ctrlAdmin');
 const {multerUpload} = require('../middleware/multer')
 
 
@@ -8,7 +8,7 @@ router.get('/cate', getCategory);
 router.get('/cateall', getCategoryFree);
 router.post('/cate', addCategory);
 router.patch('/cate', updateCategory);
-router.get('/cashier', getCashier);
+
 router.post('/cashier', addCashier);
 router.get('/product', getProduct);
 router.get('/productA', getProductAdmin);
