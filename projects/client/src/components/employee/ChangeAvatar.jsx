@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box, Avatar, FormControl, useToast } from "@chakra-ui/react";
-import { useFormik } from "formik";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { getAllCashier } from "../../services/reducer/employeeReducer";
@@ -36,15 +35,8 @@ export const ChangeAvatar = ({ item }) => {
     });
   };
 
-  const formik = useFormik({
-    initialValues: {
-      file: null,
-    },
-  });
-
   const handleFileChange = async (e) => {
     const file = await e.currentTarget.files[0];
-    await formik.setFieldValue("file", file);
     const formData = new FormData();
     formData.append("cashierId", JSON.stringify(item.id));
     formData.append("avatar", file);
@@ -59,7 +51,7 @@ export const ChangeAvatar = ({ item }) => {
 
   return (
     <Box>
-      <form onSubmit={formik.handleSubmit}>
+      <form>
         <FormControl>
           <Box textAlign="left">
             <label>

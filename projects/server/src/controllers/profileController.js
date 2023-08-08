@@ -53,6 +53,24 @@ const ProfileController = {
         );
       }
 
+      const usernameData = await commonService.findUser(username);
+      if (usernameData) {
+        return profileService.validationDataCashierFailed(
+          res,
+          400,
+          "Username exist"
+        );
+      }
+
+      const emailData = await commonService.findEmail(email);
+      if (emailData) {
+        return profileService.validationDataCashierFailed(
+          res,
+          400,
+          "Email exist"
+        );
+      }
+
       await profileService.updateUsernameEmail(cashierId, username, email);
       return res.status(200).json({
         success: "Update data succeed",

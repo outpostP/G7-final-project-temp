@@ -12,6 +12,7 @@ const AuthController = {
 
       const userId = userData.id;
       const userCart = await commonService.findUserCart(userId);
+      const userProfile = await commonService.findProfileUserId(userId);
 
       const validatePassword = await commonService.validatePassword(
         password,
@@ -35,6 +36,7 @@ const AuthController = {
             username: userData.username,
             cartId: userCart.id,
             isAdmin: userData.isAdmin,
+            avatar: userProfile.avatar,
             token,
           },
         });

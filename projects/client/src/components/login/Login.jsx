@@ -42,6 +42,7 @@ const fetchUser = async (values) => {
       localStorage.setItem("userId", dataUser.id);
       localStorage.setItem("cartId", dataUser.cartId);
       localStorage.setItem("isAdmin", dataUser.isAdmin);
+      localStorage.setItem("avatar", dataUser.avatar);
       localStorage.setItem("token", token);
     }
     return ["success", dataUser];

@@ -25,27 +25,27 @@ const {
 const { multerUpload } = require("../middleware/multer");
 
 router.post("/login", login);
-router.get("/cate", getCategory);
+router.get("/cate", getCategory); //common
 router.post("/cate", addCategory);
 router.patch("/cate", updateCategory);
 router.get("/cashier", getCashierAll);
 router.post("/cashier", addCashier);
-router.get("/product", getProduct);
+router.get("/product", getProduct); //cashier
 router.get("/productA", getProductAdmin);
 router.post("/product", multerUpload.single("productImage"), addProduct);
-router.put("/cart/item", updateCart);
-router.get("/cart/item", getCartItems);
-router.delete("/cart/item", deleteCartItems);
-router.post("/transaction", createTransaction);
+router.put("/cart/item", updateCart); //cashier
+router.get("/cart/item", getCartItems); //cashier
+router.delete("/cart/item", deleteCartItems); //cashier
+router.post("/transaction", createTransaction); //cashier
 router.get("/transaction", getAllTransaction);
 router.get("/unpaid", getAllUnpaidTransaction);
-router.get("/cart/total", cartTotal);
+router.get("/cart/total", cartTotal); //cashier
 router.patch(
   "/product/:id",
   multerUpload.single("productImage"),
   updateProduct
 );
-router.get("/cart/:cartId", getCart);
+router.get("/cart/:cartId", getCart); //cashier
 router.get("/transaction/:id", getTransactionId);
 router.get("/product/:id", getProductId);
 
