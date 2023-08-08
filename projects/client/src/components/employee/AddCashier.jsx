@@ -24,8 +24,8 @@ import { useDispatch } from "react-redux";
 import { getAllCashier } from "../../services/reducer/employeeReducer";
 
 const baseUrl = "http://localhost:8000/";
-const token = localStorage.getItem("token");
 const registerNewCashier = async (request) => {
+  const token = localStorage.getItem("token");
   try {
     const { data } = await axios.post(`${baseUrl}auth/user`, request, {
       headers: {
@@ -67,7 +67,7 @@ export const AddCashierModal = ({ isOpen, onClose }) => {
     toast({
       description: content,
       status: props,
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
       position: "top",
     });
@@ -206,8 +206,9 @@ export const AddCashierModal = ({ isOpen, onClose }) => {
             </ModalBody>
             <ModalFooter>
               <Button type="submit" colorScheme="blue" mr={3}>
-                Add Cashier
+                Add
               </Button>
+              <Button onClick={onClose}>Cancel</Button>
             </ModalFooter>
           </form>
         </ModalContent>

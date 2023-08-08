@@ -40,9 +40,36 @@ const ProfileController = {
     }
   },
 
+  updateUsernameEmail: async (req, res) => {
+    try {
+      const { cashierId, username, email } = req.body;
+
+      const userData = await commonService.findUserId(cashierId);
+      if (!userData) {
+        return profileService.validationDataCashierFailed(
+          res,
+          404,
+          "User not found"
+        );
+      }
+
+      await profileService.updateUsernameEmail(cashierId, username, email);
+      return res.status(200).json({
+        success: "Update data succeed",
+        username: username,
+        email: email,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        error: "Update data failed",
+        message: err.message,
+      });
+    }
+  },
+
   updatePassword: async (req, res) => {
     try {
-      const { cashierId, currentPassword, password } = req.body;
+      const { cashierId, password } = req.body;
 
       const userData = await commonService.findUserId(cashierId);
       if (!userData) {
@@ -53,17 +80,6 @@ const ProfileController = {
         );
       }
 
-      const validatePassword = await commonService.validatePassword(
-        currentPassword,
-        userData.password
-      );
-      if (!validatePassword) {
-        return profileService.validationPasswordFailed(
-          res,
-          400,
-          "Invalid password"
-        );
-      }
       await profileService.updateNewPassword(cashierId, password);
       return res.status(200).json({
         success: "Update password succeed",

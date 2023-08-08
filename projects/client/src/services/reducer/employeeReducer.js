@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const baseUrl = "http://localhost:8000/";
-const token = localStorage.getItem("token");
 
 const initialState = {
   dataUser: [],
@@ -19,6 +18,7 @@ export const EmployeeReducer = createSlice({
 });
 
 export const getAllCashier = () => {
+  const token = localStorage.getItem("token");
   return async (dispatch) => {
     try {
       const { data } = await axios.get(

@@ -59,7 +59,7 @@ export const ResetPassword = () => {
     toast({
       description: content,
       status: props,
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
       position: "top",
     });

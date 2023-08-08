@@ -35,7 +35,11 @@ export const Employee = () => {
         />
       </Box>
       <TableContainer borderWidth={2}>
-        <Table size="md" variant="striped" colorScheme="blue">
+        <Table
+          size={{ base: "sm", md: "md" }}
+          variant="striped"
+          colorScheme="blue"
+        >
           <Thead>
             <Tr>
               <Th width="fit-content" color={"blue.500"}>

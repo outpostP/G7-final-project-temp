@@ -68,7 +68,7 @@ export const Login = () => {
     toast({
       description: content,
       status: props,
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
       position: "top",
     });
@@ -107,15 +107,21 @@ export const Login = () => {
       >
         <Flex justify="center" align="center" minHeight="100vh">
           <Box
-            margin="80px"
+            margin={{ base: "20px", md: "50px" }}
             borderWidth="1px"
             borderRadius="lg"
-            p={"80px"}
+            p={{ base: "10px", md: "50px" }}
             boxShadow="lg"
             bg="white"
+            maxW="100%"
           >
             <Stack direction={{ base: "column", md: "row" }}>
-              <Flex flex={1} p={"30px"}>
+              <Flex
+                flex={1}
+                p={{ base: "0", md: "30px" }}
+                justify="center"
+                align="center"
+              >
                 <Image
                   alt="Login Image"
                   objectFit="cover"
@@ -123,18 +129,23 @@ export const Login = () => {
                   maxBlockSize="md"
                 />
               </Flex>
-              <Flex p={"30px"} flex={1} align="center" justify="center">
+              <Flex
+                p={{ base: "20px", md: "30px" }}
+                flex={1}
+                align="center"
+                justify="center"
+              >
                 <Stack
                   spacing={4}
                   w="full"
                   maxW="lg"
                   borderWidth="1px"
                   borderRadius="lg"
-                  boxShadow={"lg"}
+                  boxShadow="lg"
                   p={10}
                 >
                   <Heading fontSize="2xl">Welcome</Heading>
-                  <Heading color={"blue.500"} fontSize="md">
+                  <Heading color="blue.500" fontSize="md">
                     Sign in to your account
                   </Heading>
                   <FormControl
@@ -171,9 +182,9 @@ export const Login = () => {
                         onChange={formik.handleChange}
                         value={formik.values.password}
                       />
-                      <InputRightElement h={"full"}>
+                      <InputRightElement h="full">
                         <Button
-                          variant={"ghost"}
+                          variant="ghost"
                           onClick={() =>
                             setShowPassword((showPassword) => !showPassword)
                           }
@@ -191,8 +202,8 @@ export const Login = () => {
                   <Stack spacing={6}>
                     <Button
                       onClick={openResetPasswordModal}
-                      variant={"link"}
-                      color={"blue.500"}
+                      variant="link"
+                      color="blue.500"
                     >
                       Forgot Password?
                     </Button>

@@ -41,7 +41,7 @@ export const ResetPasswordModal = ({ isOpen, onClose }) => {
     toast({
       description: content,
       status: props,
-      duration: 5000,
+      duration: 3000,
       isClosable: true,
       position: "top",
     });
@@ -98,6 +98,7 @@ export const ResetPasswordModal = ({ isOpen, onClose }) => {
               <Button type="submit" colorScheme="blue" mr={3}>
                 Verify
               </Button>
+              <Button onClick={onClose}>Cancel</Button>
             </ModalFooter>
           </form>
         </ModalContent>

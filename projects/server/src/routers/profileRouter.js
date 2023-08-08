@@ -4,9 +4,19 @@ const {
   validateRequest,
   validateUpdatePassword,
   validateUpdateStatus,
+  validateUpdateUsernameEmail,
 } = require("../middleware/validator");
 const { verifyToken, verifyAdmin } = require("../middleware/auth");
 const { multerUpload } = require("../middleware/multer");
+
+router.patch(
+  "/user",
+  verifyToken,
+  verifyAdmin,
+  validateUpdateUsernameEmail,
+  validateRequest,
+  profileController.updateUsernameEmail
+);
 
 router.patch(
   "/password",

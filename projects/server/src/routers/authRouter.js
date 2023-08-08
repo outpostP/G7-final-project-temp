@@ -37,10 +37,10 @@ router.put(
 );
 router.patch(
   "/resetpass",
-  validateResetPassword,
-  validateRequest,
   verifyToken,
   verifyUserExist,
+  validateResetPassword,
+  validateRequest,
   authController.resetPassword
 );
 

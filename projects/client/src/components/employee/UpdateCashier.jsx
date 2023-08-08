@@ -12,19 +12,19 @@ import {
   FormErrorMessage,
   ModalFooter,
   Button,
-  //   useToast,
+  useToast,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-// import { useDispatch } from "react-redux";
-// import { getAllCashier } from "../../services/reducer/employeeReducer";
+import { useDispatch } from "react-redux";
+import { getAllCashier } from "../../services/reducer/employeeReducer";
 
 const baseUrl = "http://localhost:8000/";
-const token = localStorage.getItem("token");
 const updateCashier = async (request) => {
+  const token = localStorage.getItem("token");
   try {
-    const { data } = await axios.post(`${baseUrl}auth/user`, request, {
+    const { data } = await axios.patch(`${baseUrl}profile/user`, request, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -45,22 +45,23 @@ const UpdateSchema = Yup.object().shape({
     .email("Invalid email format"),
 });
 
-export const UpdateCashierModal = ({ isOpen, onClose }) => {
-  //   const toast = useToast();
-  //   const dispatch = useDispatch();
+export const UpdateCashierModal = ({ isOpen, onClose, item }) => {
+  const toast = useToast();
+  const dispatch = useDispatch();
 
-  //   const handleRegisterToast = (props, content) => {
-  //     toast({
-  //       description: content,
-  //       status: props,
-  //       duration: 5000,
-  //       isClosable: true,
-  //       position: "top",
-  //     });
-  //   };
+  const handleToast = (props, content) => {
+    toast({
+      description: content,
+      status: props,
+      duration: 3000,
+      isClosable: true,
+      position: "top",
+    });
+  };
 
   function inputType() {
     return {
+      cashierId: item.id,
       username: formik.values.username,
       email: formik.values.email,
     };
@@ -68,21 +69,20 @@ export const UpdateCashierModal = ({ isOpen, onClose }) => {
 
   const formik = useFormik({
     initialValues: {
-      username: "",
-      email: "",
+      username: item.username,
+      email: item.email,
     },
     validationSchema: UpdateSchema,
     onSubmit: async () => {
       let request = inputType();
       const result = await updateCashier(request);
-      console.log(result);
-      //   if (result[0] === "success") {
-      //     handleRegisterToast("success", "Successfully update cashier");
-      //     dispatch(getAllCashier());
-      //     onClose();
-      //   } else {
-      //     handleRegisterToast("error", "Failed update cashier");
-      //   }
+      if (result[0] === "success") {
+        handleToast("success", "Successfully update cashier");
+        dispatch(getAllCashier());
+        onClose();
+      } else {
+        handleToast("error", "Failed update cashier");
+      }
     },
   });
   return (
@@ -129,6 +129,7 @@ export const UpdateCashierModal = ({ isOpen, onClose }) => {
               <Button type="submit" colorScheme="blue" mr={3}>
                 Save
               </Button>
+              <Button onClick={onClose}>Cancel</Button>
             </ModalFooter>
           </form>
         </ModalContent>
