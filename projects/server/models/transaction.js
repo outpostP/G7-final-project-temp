@@ -4,17 +4,19 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Transaction extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of DataTypes lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      this.belongsTo(models.User, { foreignKey: "userId" });
+      this.belongsTo(models.User, { foreignKey: "userId" ,
+      onDelete: "NO ACTION",});
       this.belongsToMany(models.Products, {
         through: "Transaction_Product",
         foreignKey: "transactionId",
+        onDelete: "NO ACTION",
       });
+      this.hasMany(models.Transaction_Product, { // Change this line
+        foreignKey: "transactionId",
+        onDelete: "NO ACTION",
+      });
+    
     }
   }
   Transaction.init(
@@ -34,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       isPaid: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,

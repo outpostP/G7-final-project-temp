@@ -15,11 +15,11 @@ module.exports = {
       },
       totalPrice: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        defaultValue: 0
       },
       totalItem: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        defaultValue: 0
       },
       createdAt: {
         allowNull: false,

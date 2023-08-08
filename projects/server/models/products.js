@@ -6,12 +6,16 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsToMany(models.Cart, {
         through: "Cart_Product",
         foreignKey: "productId",
+        onDelete: "NO ACTION",
+        onUpdate: "CASCADE"
       });
       this.belongsToMany(models.Transaction, {
         through: "Transaction_Product",
         foreignKey: "productId",
+        onDelete: "NO ACTION",
       });
-      this.belongsTo(models.Category, { foreignKey: "categoryId" });
+      this.belongsTo(models.Category, { foreignKey: "categoryId" ,
+      onDelete: "NO ACTION",});
     }
   }
   Products.init(
