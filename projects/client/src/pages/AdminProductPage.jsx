@@ -10,28 +10,26 @@ const ProductList = () => {
   const [formData, setFormData] = useState({});
   const fileInputRef = useRef(null);
   const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState(null);
+  // const [radio, setRadio] = useState(1);
+  const [active, setActive] = useState(product.isActive)
+  console.log("isactive state", active)
 
   useEffect(() => {
     const fetchCategories = async () => {
       const url = 'http://localhost:8000/admin/cate';
       const response = await axios.get(url);
       setCategories(response.data.data.category);
-      console.log(response)
     };
     fetchCategories();
   }, []);
-
-  const handleCategoryChange = (event) => {
-    const selectedCategoryId = parseInt(event.target.value, 10);
-    setCategoryId(selectedCategoryId === 0 ? null : selectedCategoryId);
-  };
+  
+ console.log(product.isActive)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const formDataToSend = new FormData();
-
+  
     if (formData.productName) {
       formDataToSend.append("productname", formData.productName);
     }
@@ -44,31 +42,31 @@ const ProductList = () => {
     if (formData.categoryId) {
       formDataToSend.append("category", formData.categoryId);
     }
+
+    formDataToSend.append("status", active);
+    console.log('formdata',  formData.active)
+
     if (fileInputRef.current.files[0]) {
       formDataToSend.append("productImage", fileInputRef.current.files[0]);
     }
-
-    // Append the _method parameter to simulate PATCH request
-    // formDataToSend.append("_method", "PATCH");
-
+  
     try {
       const response = await axios.patch(`http://localhost:8000/admin/product/${id}`, formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      // Handle response
-      console.log(response.data);
-
-      // Reset the form
       setFormData({});
       fileInputRef.current.value = null;
+  
+      console.log(response.data); // Check the response data
+  
     } catch (error) {
-      // Handle error
       console.error(error);
     }
   };
+  
+  
 
   const handleChange = (e) => {
     setFormData((prevFormData) => ({
@@ -76,6 +74,7 @@ const ProductList = () => {
       [e.target.name]: e.target.value,
     }));
   };
+
 
   return (
     <div>
@@ -119,13 +118,22 @@ const ProductList = () => {
           <Input type="text" name="productDescription" value={formData.productDescription || ''} onChange={handleChange} />
         </FormControl>
         <FormControl>
-          <FormLabel>Product Status</FormLabel>
-          <Switch
-    name="isActive"
-    isChecked={formData.isActive || product.isActive}
-    onChange={() => setFormData(prevFormData => ({ ...prevFormData, isActive: !prevFormData.isActive }))}
-  />
-            </FormControl>
+  <FormLabel>Product Status</FormLabel>
+  <Switch
+  isChecked={active}
+  name="isActive"
+  onChange={(e) => setActive(e.target.checked)}
+  colorScheme="teal"
+/>
+{console.log(1321, active)}
+
+  {/* <Switch
+  isChecked={product.isActive}
+  onChange={() => setRadio(radio === 1 ? 0 : 1)}
+  colorScheme="teal"
+/> */}
+</FormControl>
+
         <Select placeholder="All Categories" name="categoryId" value={formData.categoryId || ''} onChange={handleChange}>
   {categories.map((category) => (
     <option value={category.id} key={category.id}>
