@@ -347,8 +347,9 @@ const buildProductFilterAdmin = (req) => {
 };
 
 const getProductSortOrder = (req) => {
-  const sort = req.query.sort || "desc";
-  return sort === "asc" ? [["createdAt", "ASC"]] : [["createdAt", "DESC"]];
+    const sort = req.query.sort || 'desc';
+    const field = req.query.field || 'createdAt'; // default sort field
+    return sort === 'asc' ? [[field, 'ASC']] : [[field, 'DESC']];
 };
 
 const getProductsAndInclude = async (where, order, offset, limit) => {
@@ -646,51 +647,60 @@ async function cartTotal() {
 
   async function getAllTransaction(req, res) {
     try {
-       const { startDate, endDate } = req.query;
- 
-       let whereClause = { isPaid: true};
-       if (startDate && endDate) {
+      const { startDate, endDate } = req.query;
+  
+      let whereClause = { isPaid: true };
+      if (startDate && endDate) {
+        
           whereClause = {
-             createdAt: {
-                [Op.between]: [new Date(startDate), new Date(endDate)],
-             },
-          };
-       }
- 
-       const tr = await Transaction.findAll({
-          include: [TP, Product],
-          where: whereClause,
-       });
- 
-       res.status(200).json({ data: tr });
+            isPaid: true,
+            createdAt: {
+              [Op.between]: [new Date(startDate), new Date(endDate).setHours(23,59,59)]
+            }
+          }
+        }
+      
+  
+      const tr = await Transaction.findAll({
+        include: [TP, Product],
+        where: whereClause
+      });
+  
+      res.status(200).json({ data: tr });
     } catch (error) {
-       res.status(500).json({ message: 'Error fetching transactions' });
+      res.status(500).json({ message: 'Error fetching transactions' });
     }
- }
+  }
  
- async function getAllUnpaidTransaction(req, res) {
+  async function getAllUnpaidTransaction(req, res) {
     try {
-       const { startDate, endDate } = req.query;
- 
-       let whereClause = { isPaid: false};
-       if (startDate && endDate) {
+      const { startDate, endDate } = req.query;
+  
+      let whereClause = {  };
+      if (startDate && endDate) {
+        
+  
           whereClause = {
-             createdAt: {
-                [Op.between]: [new Date(startDate), new Date(endDate)],
-             },
-          };
-       }
- 
-       const tr = await Transaction.findAll({
-          include: [TP, Product],
-          where: whereClause,
-       });
- 
-       res.status(200).json({ data: tr });
+            
+          
+            isPaid: false,
+            createdAt: {
+              [Op.between]: [new Date(startDate), new Date(endDate).setHours(23,59,59)]
+            }
+          }
+      }
+  
+      const tr = await Transaction.findAll({
+        include: [TP, Product],
+        where: whereClause
+      });
+  
+      res.status(200).json({ data: tr });
     } catch (error) {
-       res.status(500).json({ message: 'Error fetching transactions' });
+      res.status(500).json({ message: 'Error fetching transactions' });
     }
- }
+  }
+  
 
 async function getTransactionId(req, res) {
     try {

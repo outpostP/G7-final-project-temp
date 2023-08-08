@@ -11,6 +11,7 @@ const ProductTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [sortField, setSortField] = useState('productName');
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -35,26 +36,31 @@ const ProductTable = () => {
     fetchProduct()
   },[])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let url = `http://localhost:8000/admin/productA?&sort=${sortOrder}&productName=${searchQuery}&page=${currentPage}`;
-
-        if (categoryId) {
-          url += `&id_category=${categoryId}`;
-        }
-
-        const response = await axios.get(url);
-        const { data } = response.data;
-        setProducts(data.products);
-        setTotalPage(data.totalPages);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
+  const handleSortFieldChange = (newSortField) => {
+    setSortField(newSortField);
     fetchData();
-  }, [categoryId, currentPage, searchQuery, sortOrder,]);
+  };
+
+  const fetchData = async () => {
+    try {
+      let url = `http://localhost:8000/admin/productA?field=${sortField}&sort=${sortOrder}&productName=${searchQuery}&page=${currentPage}`;
+
+      if (categoryId) {
+        url += `&id_category=${categoryId}`;
+      }
+
+      const response = await axios.get(url);
+      const { data } = response.data;
+      setProducts(data.products);
+      setTotalPage(data.totalPages);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [categoryId, currentPage, searchQuery, sortOrder, sortField]);
 
   const handleCategoryChange = (event) => {
     const selectedCategoryId = parseInt(event.target.value, 10);
@@ -78,7 +84,7 @@ const ProductTable = () => {
 
   return (
     <>
-      <Flex direction="row" align="center" mt={4}>
+       <Flex direction="row" align="center" mt={4}>
         <Box mr={4}>
           <Input placeholder="Search" value={searchQuery} onChange={handleSearch} />
         </Box>
@@ -95,6 +101,8 @@ const ProductTable = () => {
         <Button onClick={toggleSortOrder}>
           {sortOrder === 'desc' ? <FaSortAmountDown /> : <FaSortAmountUp />}
         </Button>
+        <Button onClick={() => handleSortFieldChange('productName')}>Sort by Name</Button>
+        <Button onClick={() => handleSortFieldChange('productPrice')}>Sort by Price</Button>
         <Flex ml="auto" alignItems="center">
           <Button
             onClick={() => {
