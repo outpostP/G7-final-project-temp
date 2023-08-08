@@ -11,13 +11,41 @@ const Cart = db.Cart;
 const Cart_Product = db.Cart_Product;
 const { Op } = require("sequelize");
 
-
+async function getCategoryFree(req,res) {
+    try {
+        const category = await Category.findAll();
+        res.status(200).json({data: category});
+    } catch (error) {
+        res.status(500).json({message: 'error fetching categories'})
+}
+}
 
 async function getCategory(req, res)  {
     try {
-        
-        const category = await Category.findAll();
-        res.status(200).json({data: category});
+        const { page, limit, offset } = getPaginationParams(req);
+        const totalCategory = await Category.count();
+      
+        const totalPages = Math.ceil(totalCategory / limit);
+
+        const size = (function() {
+            if (totalPages > limit) {
+                return limit;
+            } else {
+                return totalPages;
+            }
+        })();
+
+        const category = await Category.findAll({
+            limit: limit,
+            offset: offset
+        })
+        console.log(category)
+        res.status(200).json({data: {
+            totalPages: totalPages,
+            page: page,
+            pageSize: size,
+            category: category,
+        }});
     } catch (error) {
         res.status(500).json({message: 'error fetching categories'})
     }
@@ -231,6 +259,7 @@ const getPaginationParams = (req) => {
     return { page, limit, offset };
 };
 
+
 const buildProductFilter = (req) => {
     const { id_category, productName } = req.query;
     const where = { isActive: true };
@@ -275,6 +304,7 @@ const getProductsAndInclude = async (where, order, offset, limit) => {
 };
 
 
+
 async function addProduct(req,res){
     try {
         const {productname, productprice, productdes, category}  = req.body;
@@ -293,6 +323,7 @@ async function addProduct(req,res){
      });
     }
     catch (err) {
+        console.log(err)
         return res.status(500).json({message: err.message});
     };
 };
@@ -338,7 +369,7 @@ const deleteCategory = async (req, res) => {
         where: { id: category_id }
       });
   
-      await Category.destroy({ where: { category_id: category_id } });
+      await Category.destroy({ where: { id: category_id } });
     
       res.status(200).send(`Category ${category_id} was deleted successfully and all related products were set to category_id NULL.`);
     } catch (error) {
@@ -631,4 +662,4 @@ async function deleteCart(req, res) {
     }
 }
 
-module.exports = {getAllUnpaidTransaction,getProductAdmin,deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}
+module.exports = {getCategoryFree,getAllUnpaidTransaction,getProductAdmin,deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}

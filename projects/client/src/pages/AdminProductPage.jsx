@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-duplicate-props */
-import { Box, Table, Thead, Tbody, Tr, Th, Td, TableCaption, FormControl,Select, FormLabel, Input, Button } from "@chakra-ui/react";
+import { Box, Table, Thead, Tbody, Tr, Th, Td, TableCaption, FormControl, Select, FormLabel, Input, Button, Switch } from "@chakra-ui/react";
 import { useLoaderData, useParams } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
@@ -16,7 +16,8 @@ const ProductList = () => {
     const fetchCategories = async () => {
       const url = 'http://localhost:8000/admin/cate';
       const response = await axios.get(url);
-      setCategories(response.data.data);
+      setCategories(response.data.data.category);
+      console.log(response)
     };
     fetchCategories();
   }, []);
@@ -44,7 +45,7 @@ const ProductList = () => {
       formDataToSend.append("category", formData.categoryId);
     }
     if (fileInputRef.current.files[0]) {
-      formDataToSend.append("file", fileInputRef.current.files[0]);
+      formDataToSend.append("productImage", fileInputRef.current.files[0]);
     }
 
     // Append the _method parameter to simulate PATCH request
@@ -79,7 +80,7 @@ const ProductList = () => {
   return (
     <div>
       <Table variant="striped" colorScheme="teal">
-        <TableCaption>Product List</TableCaption>
+        <TableCaption>Edit Product</TableCaption>
         <Thead>
           <Tr>
             <Th>Product Name</Th>
@@ -117,7 +118,15 @@ const ProductList = () => {
           <FormLabel>Product Description</FormLabel>
           <Input type="text" name="productDescription" value={formData.productDescription || ''} onChange={handleChange} />
         </FormControl>
-        <Select placeholder="All Categories" onChange={handleCategoryChange} name="categoryId" value={formData.categoryId || ''} onChange={handleChange}>
+        <FormControl>
+          <FormLabel>Product Status</FormLabel>
+          <Switch
+    name="isActive"
+    isChecked={formData.isActive || product.isActive}
+    onChange={() => setFormData(prevFormData => ({ ...prevFormData, isActive: !prevFormData.isActive }))}
+  />
+            </FormControl>
+        <Select placeholder="All Categories" name="categoryId" value={formData.categoryId || ''} onChange={handleChange}>
   {categories.map((category) => (
     <option value={category.id} key={category.id}>
       {category.categoryName}
