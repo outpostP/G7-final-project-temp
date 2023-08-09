@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-no-duplicate-props */
-import { Box, Table, Thead, Tbody, Tr, Th, Td, TableCaption, FormControl, Select, FormLabel, Input, Button, Switch } from "@chakra-ui/react";
-import { useLoaderData, useParams } from 'react-router-dom';
+import { Box, Toast, Table, Thead, Tbody, Tr, Th, Td, TableCaption, FormControl, Select, FormLabel, Input, Button, Switch } from "@chakra-ui/react";
+import { useLoaderData, useParams, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+
 
 const ProductList = () => {
   const { id } = useParams();
@@ -13,6 +14,7 @@ const ProductList = () => {
   // const [radio, setRadio] = useState(1);
   const [active, setActive] = useState(product.isActive)
   console.log("isactive state", active)
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -56,13 +58,34 @@ const ProductList = () => {
           "Content-Type": "multipart/form-data",
         },
       });
+      
+      // Show success toast
+      Toast({
+        title: "Success",
+        description: "Product updated successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+
       setFormData({});
       fileInputRef.current.value = null;
   
       console.log(response.data); // Check the response data
-  
+
+      // Redirect to '/products'
+      navigate("/products");
     } catch (error) {
       console.error(error);
+
+      // Show error toast
+      Toast({
+        title: "Error",
+        description: "Failed to update product.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
   
@@ -74,6 +97,7 @@ const ProductList = () => {
       [e.target.name]: e.target.value,
     }));
   };
+
 
 
   return (

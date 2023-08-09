@@ -377,15 +377,15 @@ async function getCategoryId(req,res){
 };
 
 const deleteCategory = async (req, res) => {
-    const category_id = req.params.id; 
+    const {id} = req.params; 
     try {
-      await Product.update({ category_id: null }, {
-        where: { id: category_id }
+      await Product.update({ category_id: 'none' }, {
+        where: { category_id: id }
       });
   
-      await Category.destroy({ where: { id: category_id } });
+      await Category.update({isActive: false} ,{ where: { id: id } });
     
-      res.status(200).send(`Category ${category_id} was deleted successfully and all related products were set to category_id NULL.`);
+      res.status(200).send(`Category ${id} was deleted successfully and all related products were set to category_id NULL.`);
     } catch (error) {
       res.status(500).send("Could not delete category. Error: "+ error);
     }

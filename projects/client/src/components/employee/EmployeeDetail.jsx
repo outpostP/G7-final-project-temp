@@ -34,6 +34,7 @@ const updateStatus = async (userId, isActive) => {
 export const EmployeeDetail = () => {
   const dispatch = useDispatch();
   const result = useSelector((state) => state.dataEmployee.dataUser);
+  const page = useSelector((state) => state.dataEmployee.currentPage);
   const [editModalStates, setEditModalStates] = useState({});
   const [resetModalStates, setResetModalStates] = useState({});
   const [switchStates, setSwitchStates] = useState({});
@@ -60,7 +61,7 @@ export const EmployeeDetail = () => {
     } else {
       handleToast("error", "Disable");
     }
-    dispatch(getAllCashier());
+    dispatch(getAllCashier(page));
   };
 
   const openResetModal = (itemId) => {
@@ -103,46 +104,51 @@ export const EmployeeDetail = () => {
     setSwitchStates(initialSwitchStates);
   }, [result]);
 
-  return result.map((item, index) => {
-    const isSwitchOn = switchStates[item.id] || false;
-    return (
-      <>
-        <Tr key={item.id}>
-          <Td>{index + 1}</Td>
-          <Td>
-            <ChangeAvatar item={item} />
-          </Td>
-          <Td>{item.username}</Td>
-          <Td>{item.email}</Td>
-          <Td>
-            <Button colorScheme="blue" onClick={() => openResetModal(item.id)}>
-              Reset
-            </Button>
-            <ResetPasswordModal
-              isOpen={resetModalStates[item.id] || false}
-              onClose={() => closeResetModal(item.id)}
-              item={item}
-            />
-          </Td>
-          <Td>
-            <Button colorScheme="blue" onClick={() => openEditModal(item.id)}>
-              Edit
-            </Button>
-            <UpdateCashierModal
-              isOpen={editModalStates[item.id] || false}
-              onClose={() => closeEditModal(item.id)}
-              item={item}
-            />
-          </Td>
-          <Td>
-            <Switch
-              colorScheme="teal"
-              isChecked={isSwitchOn}
-              onChange={() => handleSwitchChange(item.id)}
-            />
-          </Td>
-        </Tr>
-      </>
-    );
-  });
+  if (page) {
+    return result.map((item, index) => {
+      const isSwitchOn = switchStates[item.id] || false;
+      return (
+        <>
+          <Tr key={item.id}>
+            <Td>{(page - 1) * 10 + index + 1}</Td>
+            <Td>
+              <ChangeAvatar item={item} />
+            </Td>
+            <Td>{item.username}</Td>
+            <Td>{item.email}</Td>
+            <Td>
+              <Button
+                colorScheme="blue"
+                onClick={() => openResetModal(item.id)}
+              >
+                Reset
+              </Button>
+              <ResetPasswordModal
+                isOpen={resetModalStates[item.id] || false}
+                onClose={() => closeResetModal(item.id)}
+                item={item}
+              />
+            </Td>
+            <Td>
+              <Button colorScheme="blue" onClick={() => openEditModal(item.id)}>
+                Edit
+              </Button>
+              <UpdateCashierModal
+                isOpen={editModalStates[item.id] || false}
+                onClose={() => closeEditModal(item.id)}
+                item={item}
+              />
+            </Td>
+            <Td>
+              <Switch
+                colorScheme="teal"
+                isChecked={isSwitchOn}
+                onChange={() => handleSwitchChange(item.id)}
+              />
+            </Td>
+          </Tr>
+        </>
+      );
+    });
+  }
 };

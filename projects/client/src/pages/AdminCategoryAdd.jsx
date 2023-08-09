@@ -1,81 +1,62 @@
-import React, { useState } from 'react';
-import { Box, Button, Input, useToast } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { FormControl, FormLabel, Input, Button } from "@chakra-ui/react";
+import { useState } from "react";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const AddCategoryForm = () => {
-  const [category, setCategory] = useState('');
-  const toast = useToast();
-  const navigate = useNavigate();
+const CategoryAdd = () => {
+  const [category, setCategory] = useState("");
 
-  const handleSubmit = async () => {
-    if (category === '') {
-      toast({
-        title: 'Please input the category',
-        status: 'warning',
-        variant: 'subtle',
-        isClosable: true,
-      });
-    } else {
-      try {
-        const response = await axios.post('http://localhost:8000/admin/cate/', {
-          category: category,
-        });
-        if (response.status === 200) {
-          toast({
-            title: 'Submission succeeded',
-            status: 'success',
-            variant: 'subtle',
-            isClosable: true,
-          });
-          navigate('admin/category');
-        } else {
-          toast({
-            title: 'Submission failed',
-            status: 'error',
-            variant: 'subtle',
-            isClosable: true,
-          });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/admin/cate",
+        { category }, // Sending the category as an object
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      } catch (error) {
-        toast({
-          title: 'An error occurred',
-          description: error.message,
-          status: 'error',
-          variant: 'subtle',
-          isClosable: true,
-        });
-      }
+      );
+
+      // Handle response
+      console.log(response.data);
+      toast.success(response.data.message);
+
+      // Reset the form
+      setCategory("");
+    } catch (error) {
+      // Handle error
+      console.error(error);
+      toast.error("An error occurred");
     }
   };
 
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  };
+
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      maxWidth="400px"
-      margin="0 auto"
-      padding="2rem"
-      borderRadius="md"
-      boxShadow="md"
-      backgroundColor="white"
-      sx={{
-        '@media (min-width: 768px)': {
-          maxWidth: '600px',
-          padding: '4rem',
-        },
-      }}
-    >
-      <Input
-        placeholder="Add categories"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        marginBottom="1rem"
-      />
-      <Button onClick={handleSubmit}>Submit</Button>
-    </Box>
+    <div>
+      <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+        <FormControl className="form-control">
+          <FormLabel>Category</FormLabel>
+          <Input
+            type="text"
+            name="category"
+            value={category}
+            onChange={handleCategoryChange}
+          />
+        </FormControl>
+        <Button type="submit" colorScheme="teal" mt={4}>
+          Add Category
+        </Button>
+      </form>
+      <ToastContainer />
+    </div>
   );
 };
 
-export default AddCategoryForm;
+export default CategoryAdd;

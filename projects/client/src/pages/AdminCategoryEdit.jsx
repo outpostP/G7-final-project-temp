@@ -1,12 +1,14 @@
 import { Box, Button, Input, Table, Thead, Tbody, Tr, Th, Td, TableCaption } from "@chakra-ui/react";
-import { useLoaderData, useParams } from 'react-router-dom'
+import { useLoaderData, useParams, useNavigate } from 'react-router-dom';
 import { useState } from "react";
 import axios from 'axios';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CategoryEdit = () => {
-    const {id} = useParams();
-    const cate = useLoaderData()
+    const { id } = useParams();
+    const cate = useLoaderData();
+    const navigate = useNavigate();
 
     // Set state to hold user's input
     const [userInput, setUserInput] = useState(cate.categoryName);
@@ -19,23 +21,31 @@ const CategoryEdit = () => {
                 category: userInput
             });
 
-            // Handle response         
+            // Handle response
             console.log(response.data);
-            
+
+            // Show toast notification for success
+            toast.success(response.data.message);
+
             // Reset the form
             setUserInput('');
+
+            // Navigate to '/category'
+            navigate('/admin/category');
 
         } catch (error) {
             // Handle error
             console.error(error);
+
+            // Show toast notification for failure
+            toast.error('Failed to update category.');
         }
     };
-    
+
     // Update userInput state every time user types into the input field
     const handleInputChange = (e) => {
         setUserInput(e.target.value);
     };
-
 
     return (
         <Box as="form" onSubmit={handleSubmit}>
@@ -62,6 +72,9 @@ const CategoryEdit = () => {
             />
 
             <Button type="submit">Update Category</Button>
+
+            {/* Toast notifications */}
+            <ToastContainer />
         </Box>
     );
 };

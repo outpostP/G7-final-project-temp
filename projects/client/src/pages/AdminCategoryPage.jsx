@@ -28,7 +28,8 @@ const CategoryTable = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/admin/cate/${id}`);
+      await axios.patch(`http://localhost:8000/admin/cate/${id}`);
+      console.log(id)
       fetchCategories();
     } catch (error) {
       console.log(error);

@@ -20,6 +20,10 @@ import CategoryEdit, { currentCategoryLoader } from "./pages/AdminCategoryEdit";
 import CategoryLayout from "./Layout/Category";
 import AddCategoryForm from "./pages/AdminProductAdd";
 import AdminLayout from "./Layout/AdminLayouts";
+import EmployeePage from "./pages/AdminEmployeePage";
+import ResetPasswordPage from "./pages/ResetPasswordPage"
+import Checkout, {checkoutLoader} from "./pages/CashierCheckout";
+import CategoryAdd from "./pages/AdminCategoryAdd";
 
 function checkIsAdmin() {
   const role = localStorage.getItem("isAdmin");
@@ -86,39 +90,34 @@ function ProtectedUserRoute() {
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Homepage />}>
-      <Route index element={<LoginForm />} />
-      {/* <Route path="reset-password/:token" element={<ResetPassword />} /> */}
-      <Route path="admin" element={<ProtectedAdminRoute />}>
-        <Route index element={<ProtectedRoute><AdminLayout /></ProtectedRoute>} /> 
-        <Route path="reports" element={<ProtectedRoute><ReportLayout /></ProtectedRoute>}>
-          <Route index element={<ProtectedRoute><AdminReportAll /></ProtectedRoute>} /> 
-          <Route path="unpaid" element={<ProtectedRoute><TransactionUnpaid />  </ProtectedRoute>} /> 
-          <Route path=":id" element={<ProtectedRoute><TransactionList />  </ProtectedRoute>} loader={currentTransactionLoader} /> 
-      </Route>
-          <Route path="products" element={<ProtectedRoute><ProductLayout /></ProtectedRoute>} > 
-            <Route index element={<ProtectedRoute><ProductTable /></ProtectedRoute>} /> 
-            <Route path="add" element={<ProtectedRoute><ProductAdd /></ProtectedRoute>}  /> 
-            <Route path=":id" element={<ProtectedRoute><ProductList /></ProtectedRoute>} loader={currentProductLoader}/> 
-        </Route>
-        <Route path="category" element={<ProtectedRoute><CategoryLayout /></ProtectedRoute>}>
-          <Route index element={<ProtectedRoute><CategoryTable /></ProtectedRoute>}/>
-          <Route path="add" element={<ProtectedRoute><AddCategoryForm /></ProtectedRoute>}/>
-          <Route path=":id" element={<ProtectedRoute><CategoryEdit /></ProtectedRoute>} loader={currentCategoryLoader} />
-        </Route>
-      </Route>
-      <Route path="user" element={<ProtectedUserRoute />}>
-        <Route
-          index
-          element={
-            <ProtectedRoute>
-              <StorePage />
-            </ProtectedRoute>
-          }
-        />
-      </Route>
-    </Route>
+  <Route path="reset-password/:token" element={<ResetPasswordPage />} />
+<Route index element={<LoginForm />} />
+<Route path="admin" element={<ProtectedAdminRoute />}>
+  <Route index element={<ProtectedRoute><EmployeePage /></ProtectedRoute>} /> 
+  <Route path="reports" element={<ProtectedRoute><ReportLayout /></ProtectedRoute>}>
+    <Route index element={<ProtectedRoute><AdminReportAll /></ProtectedRoute>} /> 
+    <Route path="unpaid" element={<ProtectedRoute><TransactionUnpaid />  </ProtectedRoute>} /> 
+    <Route path=":id" element={<ProtectedRoute><TransactionList />  </ProtectedRoute>} loader={currentTransactionLoader} /> 
+</Route>
+    <Route path="products" element={<ProtectedRoute><ProductLayout /></ProtectedRoute>} > 
+      <Route index element={<ProtectedRoute><ProductTable /></ProtectedRoute>} /> 
+      <Route path="add" element={<ProtectedRoute><ProductAdd /></ProtectedRoute>}  /> 
+      <Route path=":id" element={<ProtectedRoute><ProductList /></ProtectedRoute>} loader={currentProductLoader}/> 
+  </Route>
+  <Route path="category" element={<ProtectedRoute><CategoryLayout /></ProtectedRoute>}>
+    <Route index element={<ProtectedRoute><CategoryTable /></ProtectedRoute>}/>
+    <Route path="add" element={<ProtectedRoute><CategoryAdd /></ProtectedRoute>}/>
+    <Route path=":id" element={<ProtectedRoute><CategoryEdit /></ProtectedRoute>} loader={currentCategoryLoader} />
+  </Route>
+</Route>
+<Route path="user" element={<ProtectedUserRoute />}>
+  <Route index element={<ProtectedRoute><StorePage /></ProtectedRoute>} /> 
+  <Route path="checkout/:id" element={<ProtectedRoute><Checkout /></ProtectedRoute>} loader={checkoutLoader} /> 
+</Route>
+</Route>
   )
-);
+  );
+  
 
 function App() {
   return <RouterProvider router={router} />;

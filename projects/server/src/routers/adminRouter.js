@@ -27,7 +27,7 @@ router.get('/transaction/:id', getTransactionId);
 router.get('/product/:id', getProductId);
 router.get('/cate/:id', getCategoryId);
 router.patch('/cate/:id', updateCategory);
-router.delete('/cate/:id', deleteCategory);
+router.patch('/cate/:id', deleteCategory);
 router.delete('/cart/:id', resetCart);
 router.post('/checkout/:id', payment)
 router.get('/checkout/:id', transactionCashier);
