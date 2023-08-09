@@ -9,8 +9,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
+      'http://localhost:3000' 
     ],
   })
 );
@@ -18,6 +17,7 @@ app.use(
 app.use(express.json());
 const db = require("../models");
 // db.sequelize.sync({ alter: true });
+
 
 
 //#region API ROUTES
