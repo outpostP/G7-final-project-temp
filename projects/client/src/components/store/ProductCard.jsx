@@ -1,24 +1,9 @@
-/* eslint-disable no-unused-vars */
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  Text,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Image,
-} from "@chakra-ui/react";
-import axios from "axios";
+import { Box, Flex, Button, Text, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Image } from '@chakra-ui/react';
+import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
+import axios from 'axios';
+import { useState } from 'react';
 
-const ProductCard = ({
-  product,
-  cartItems,
-  onUpdateCartItems,
-  setRefreshCart,
-}) => {
+const ProductCard = ({ product, cartItems, onUpdateCartItems, setRefreshCart }) => {
   const [quantity, setQuantity] = useState(1);
 
   const handleQuantityChange = (value) => {
@@ -29,15 +14,12 @@ const ProductCard = ({
 
   const handleUpdateCart = async () => {
     try {
-      const response = await axios.put(
-        "http://localhost:8000/admin/cart/item",
-        {
-          cartId: cartId,
-          productId: product.id,
-          quantity: quantity,
-        }
-      );
-      console.log(response);
+      const response = await axios.put('http://localhost:8000/admin/cart/item', {
+        cartId: cartId,
+        productId: product.id,
+        quantity: quantity
+      });
+      console.log(response)
       onUpdateCartItems();
       setRefreshCart(true);
     } catch (error) {
@@ -47,14 +29,13 @@ const ProductCard = ({
 
   const handleDeleteItem = async () => {
     try {
-      await axios.delete("http://localhost:8000/admin/cart/item", {
+      await axios.delete('http://localhost:8000/admin/cart/item', {
         data: {
           cartId: cartId,
-          productId: product.id,
-        },
+          productId: product.id
+        }
       });
 
-      // After successfully deleting the item, trigger the parent component's fetchCartItems function
       onUpdateCartItems();
       setRefreshCart(true);
     } catch (error) {
@@ -63,35 +44,28 @@ const ProductCard = ({
   };
 
   return (
-    <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6">
-      <Text fontSize="xl" mb="4">
-        {product.productName}
-      </Text>
+    <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6" maxWidth={{ base: '100%', md: '500px' }}>
+      <Text fontSize="xl" mb="4">{product.productName}</Text>
       <Text mb="4">${product.productPrice}</Text>
       <Text mb="4">{product.productDescription}</Text>
-      <Image
-        src={`http://localhost:8000/${product.productImage}`}
-        alt={product.productName}
-        mb="4"
-      />
-      <NumberInput
-        min={0}
-        value={quantity}
-        onChange={handleQuantityChange}
-        mb="4"
-      >
-        <NumberInputField />
-        <NumberInputStepper>
-          <NumberIncrementStepper />
-          <NumberDecrementStepper />
-        </NumberInputStepper>
-      </NumberInput>
-      <Button colorScheme="teal" onClick={handleUpdateCart}>
-        Update Cart
-      </Button>
-      <Button colorScheme="red" onClick={handleDeleteItem}>
-        Delete Item
-      </Button>
+      <Flex direction="column" alignItems="center" mb="4">
+        <Image src={`http://localhost:8000/${product.productImage}`} alt={product.productName} />
+        <NumberInput min={0} value={quantity} onChange={handleQuantityChange} mt="4">
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </Flex>
+      <Flex justify="space-between">
+        <Button colorScheme="teal" onClick={handleUpdateCart}>
+          <EditIcon />
+        </Button>
+        <Button colorScheme="red" onClick={handleDeleteItem}>
+          <DeleteIcon />
+        </Button>
+      </Flex>
     </Box>
   );
 };

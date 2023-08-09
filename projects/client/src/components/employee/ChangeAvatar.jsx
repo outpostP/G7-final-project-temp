@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box, Avatar, FormControl, useToast } from "@chakra-ui/react";
-import { useFormik } from "formik";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getAllCashier } from "../../services/reducer/employeeReducer";
 
 const baseUrl = "http://localhost:8000/";
@@ -23,6 +22,7 @@ const uploadAvatar = async (formData) => {
 };
 
 export const ChangeAvatar = ({ item }) => {
+  const page = useSelector((state) => state.dataEmployee.currentPage);
   const dispatch = useDispatch();
   const toast = useToast();
 
@@ -36,22 +36,15 @@ export const ChangeAvatar = ({ item }) => {
     });
   };
 
-  const formik = useFormik({
-    initialValues: {
-      file: null,
-    },
-  });
-
   const handleFileChange = async (e) => {
     const file = await e.currentTarget.files[0];
-    await formik.setFieldValue("file", file);
     const formData = new FormData();
     formData.append("cashierId", JSON.stringify(item.id));
     formData.append("avatar", file);
     const result = await uploadAvatar(formData);
     if (result) {
       handleToast("success", "Successfully change avatar");
-      dispatch(getAllCashier());
+      dispatch(getAllCashier(page));
     } else {
       handleToast("error", "Failed change avatar");
     }
@@ -59,7 +52,7 @@ export const ChangeAvatar = ({ item }) => {
 
   return (
     <Box>
-      <form onSubmit={formik.handleSubmit}>
+      <form>
         <FormControl>
           <Box textAlign="left">
             <label>

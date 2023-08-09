@@ -1,7 +1,7 @@
 require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
+const path = require('path');
 const { join } = require("path");
 
 const PORT = process.env.PORT || 8000;
@@ -9,8 +9,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
+      'http://localhost:3000' 
     ],
   })
 );
@@ -19,18 +18,20 @@ app.use(express.json());
 const db = require("../models");
 // db.sequelize.sync({ alter: true });
 
+
+
 //#region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
-app.use("/", express.static(path.resolve(__dirname, "../")));
+app.use('/', express.static(path.resolve(__dirname, '../')))
 //routes
 const { authRouter, profileRouter, adminRouter } = require("./routers");
 
 //middleware
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
-app.use("/admin", adminRouter);
+app.use('/admin', adminRouter);
 
 // ===========================
 

@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-no-duplicate-props */
-import { Box, Table, Thead, Tbody, Tr, Th, Td, TableCaption, FormControl,Select, FormLabel, Input, Button } from "@chakra-ui/react";
-import { useLoaderData, useParams } from 'react-router-dom';
+import { Box, Toast, Table, Thead, Tbody, Tr, Th, Td, TableCaption, FormControl, Select, FormLabel, Input, Button, Switch } from "@chakra-ui/react";
+import { useLoaderData, useParams, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+
 
 const ProductList = () => {
   const { id } = useParams();
@@ -10,27 +11,27 @@ const ProductList = () => {
   const [formData, setFormData] = useState({});
   const fileInputRef = useRef(null);
   const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState(null);
+  // const [radio, setRadio] = useState(1);
+  const [active, setActive] = useState(product.isActive)
+  console.log("isactive state", active)
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
       const url = 'http://localhost:8000/admin/cate';
       const response = await axios.get(url);
-      setCategories(response.data.data);
+      setCategories(response.data.data.category);
     };
     fetchCategories();
   }, []);
-
-  const handleCategoryChange = (event) => {
-    const selectedCategoryId = parseInt(event.target.value, 10);
-    setCategoryId(selectedCategoryId === 0 ? null : selectedCategoryId);
-  };
+  
+ console.log(product.isActive)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const formDataToSend = new FormData();
-
+  
     if (formData.productName) {
       formDataToSend.append("productname", formData.productName);
     }
@@ -43,31 +44,52 @@ const ProductList = () => {
     if (formData.categoryId) {
       formDataToSend.append("category", formData.categoryId);
     }
+
+    formDataToSend.append("status", active);
+    console.log('formdata',  formData.active)
+
     if (fileInputRef.current.files[0]) {
-      formDataToSend.append("file", fileInputRef.current.files[0]);
+      formDataToSend.append("productImage", fileInputRef.current.files[0]);
     }
-
-    // Append the _method parameter to simulate PATCH request
-    // formDataToSend.append("_method", "PATCH");
-
+  
     try {
       const response = await axios.patch(`http://localhost:8000/admin/product/${id}`, formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      
+      // Show success toast
+      Toast({
+        title: "Success",
+        description: "Product updated successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
 
-      // Handle response
-      console.log(response.data);
-
-      // Reset the form
       setFormData({});
       fileInputRef.current.value = null;
+  
+      console.log(response.data); // Check the response data
+
+      // Redirect to '/products'
+      navigate("/products");
     } catch (error) {
-      // Handle error
       console.error(error);
+
+      // Show error toast
+      Toast({
+        title: "Error",
+        description: "Failed to update product.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
+  
+  
 
   const handleChange = (e) => {
     setFormData((prevFormData) => ({
@@ -76,10 +98,12 @@ const ProductList = () => {
     }));
   };
 
+
+
   return (
     <div>
       <Table variant="striped" colorScheme="teal">
-        <TableCaption>Product List</TableCaption>
+        <TableCaption>Edit Product</TableCaption>
         <Thead>
           <Tr>
             <Th>Product Name</Th>
@@ -117,7 +141,24 @@ const ProductList = () => {
           <FormLabel>Product Description</FormLabel>
           <Input type="text" name="productDescription" value={formData.productDescription || ''} onChange={handleChange} />
         </FormControl>
-        <Select placeholder="All Categories" onChange={handleCategoryChange} name="categoryId" value={formData.categoryId || ''} onChange={handleChange}>
+        <FormControl>
+  <FormLabel>Product Status</FormLabel>
+  <Switch
+  isChecked={active}
+  name="isActive"
+  onChange={(e) => setActive(e.target.checked)}
+  colorScheme="teal"
+/>
+{console.log(1321, active)}
+
+  {/* <Switch
+  isChecked={product.isActive}
+  onChange={() => setRadio(radio === 1 ? 0 : 1)}
+  colorScheme="teal"
+/> */}
+</FormControl>
+
+        <Select placeholder="All Categories" name="categoryId" value={formData.categoryId || ''} onChange={handleChange}>
   {categories.map((category) => (
     <option value={category.id} key={category.id}>
       {category.categoryName}

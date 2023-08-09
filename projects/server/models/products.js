@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       categoryId: {
         type: DataTypes.INTEGER,
+        allowNull: true
       },
       isActive: {
         type: DataTypes.BOOLEAN,

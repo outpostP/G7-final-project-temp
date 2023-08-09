@@ -42,6 +42,7 @@ const fetchUser = async (values) => {
       localStorage.setItem("userId", dataUser.id);
       localStorage.setItem("cartId", dataUser.cartId);
       localStorage.setItem("isAdmin", dataUser.isAdmin);
+      localStorage.setItem("avatar", dataUser.avatar);
       localStorage.setItem("token", token);
     }
     return ["success", dataUser];
@@ -50,7 +51,7 @@ const fetchUser = async (values) => {
   }
 };
 
-export const Login = () => {
+const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
@@ -224,3 +225,5 @@ export const Login = () => {
     </form>
   );
 };
+
+export default LoginForm;

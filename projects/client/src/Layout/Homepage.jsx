@@ -4,8 +4,10 @@ import { Box } from "@chakra-ui/react";
 const Homepage = () => {
   return (
     <Box display="flex">
-      <Sidebar />
-      <Box flex="1">
+      <Box position={"fixed"}>
+        <Sidebar />
+      </Box>
+      <Box flex="1" marginLeft="120px">
         <Outlet />
       </Box>
     </Box>
