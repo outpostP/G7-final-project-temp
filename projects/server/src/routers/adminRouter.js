@@ -23,30 +23,36 @@ const {
   getAllUnpaidTransaction,
 } = require("../controllers/admin/ctrlAdmin");
 const { multerUpload } = require("../middleware/multer");
+const {
+  verifyToken,
+  verifyAdmin,
+  verifyCashier,
+} = require("../middleware/auth");
 
 router.post("/login", login);
-router.get("/cate", getCategory); //common
-router.post("/cate", addCategory);
-router.patch("/cate", updateCategory);
-router.get("/cashier", getCashierAll);
-router.post("/cashier", addCashier);
-router.get("/product", getProduct); //cashier
-router.get("/productA", getProductAdmin);
-router.post("/product", multerUpload.single("productImage"), addProduct);
-router.put("/cart/item", updateCart); //cashier
-router.get("/cart/item", getCartItems); //cashier
-router.delete("/cart/item", deleteCartItems); //cashier
-router.post("/transaction", createTransaction); //cashier
-router.get("/transaction", getAllTransaction);
-router.get("/unpaid", getAllUnpaidTransaction);
-router.get("/cart/total", cartTotal); //cashier
+router.get("/cate", verifyToken, getCategory); //common
+router.post("/cate", verifyToken, verifyAdmin, addCategory);
+router.patch("/cate", verifyToken, verifyAdmin, updateCategory);
+router.get("/cashier", verifyToken, verifyAdmin, getCashierAll);
+router.post("/cashier", verifyToken, verifyAdmin, addCashier);
+router.get("/productA", verifyToken, verifyAdmin, getProductAdmin);
+router.post(
+  "/product",
+  verifyToken,
+  verifyAdmin,
+  multerUpload.single("productImage"),
+  addProduct
+);
+router.get("/transaction", verifyToken, verifyAdmin, getAllTransaction);
+router.get("/unpaid", verifyToken, verifyAdmin, getAllUnpaidTransaction);
 router.patch(
   "/product/:id",
+  verifyToken,
+  verifyAdmin,
   multerUpload.single("productImage"),
   updateProduct
 );
-router.get("/cart/:cartId", getCart); //cashier
-router.get("/transaction/:id", getTransactionId);
-router.get("/product/:id", getProductId);
+router.get("/transaction/:id", verifyToken, verifyAdmin, getTransactionId);
+router.get("/product/:id", verifyToken, verifyAdmin, getProductId);
 
 module.exports = router;
