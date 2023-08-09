@@ -5,27 +5,16 @@ require("dotenv").config({
 const bcrypt = require("bcrypt");
 const db = require("../../models");
 const fs = require("fs");
+const { Op } = require("sequelize");
 const users = db.User;
 const profiles = db.User_Profile;
 
-const updateNewUsername = async (userId, newUsername) => {
+const updateUsernameEmail = async (userId, username, email) => {
   const result = await db.sequelize.transaction(async (t) => {
     return await users.update(
       {
-        username: newUsername,
-      },
-      { where: { id: userId } },
-      { transaction: t }
-    );
-  });
-  return result;
-};
-
-const updateNewEmail = async (userId, newEmail) => {
-  const result = await db.sequelize.transaction(async (t) => {
-    return await users.update(
-      {
-        email: newEmail,
+        username: username,
+        email: email,
       },
       { where: { id: userId } },
       { transaction: t }
@@ -62,6 +51,48 @@ const updateUserStatus = async (userId, status) => {
   return result;
 };
 
+const getAllCashier = async (
+  pageSize,
+  offset,
+  sortBy,
+  searchUsername,
+  isAdmin
+) => {
+  const result = await db.sequelize.transaction(async (t) => {
+    const queryOptions = {
+      attributes: [
+        "id",
+        "username",
+        "email",
+        "isAdmin",
+        "createdAt",
+        "updatedAt",
+      ],
+      include: [
+        {
+          model: profiles,
+          attributes: ["id", "userId", "avatar", "isActive"],
+        },
+      ],
+      limit: pageSize,
+      offset: offset,
+      order: [["createdAt", sortBy]],
+      where: {
+        isAdmin: isAdmin,
+      },
+    };
+
+    if (searchUsername) {
+      queryOptions.where.username = {
+        [Op.like]: `%${searchUsername}%`,
+      };
+    }
+
+    return await users.findAll(queryOptions, { transaction: t });
+  });
+  return result;
+};
+
 const updateUserAvatar = async (userId, pathAvatar) => {
   const result = await db.sequelize.transaction(async (t) => {
     return await profiles.update(
@@ -85,16 +116,9 @@ const deleteOldImage = (imagePath) => {
   });
 };
 
-const validationUsernameFailed = async (res, statusCode, message) => {
+const validationDataCashierFailed = async (res, statusCode, message) => {
   return res.status(statusCode).json({
-    error: "Update username failed",
-    message: message,
-  });
-};
-
-const validationEmailFailed = async (res, statusCode, message) => {
-  return res.status(statusCode).json({
-    error: "Update email failed",
+    error: "Update data cashier failed",
     message: message,
   });
 };
@@ -121,14 +145,13 @@ const validationAvatarFailed = async (res, statusCode, message) => {
 };
 
 module.exports = {
-  updateNewUsername,
-  validationUsernameFailed,
-  updateNewEmail,
-  validationEmailFailed,
+  updateUsernameEmail,
+  validationDataCashierFailed,
   validationPasswordFailed,
   updateNewPassword,
   validationStatusFailed,
   updateUserStatus,
+  getAllCashier,
   updateUserAvatar,
   validationAvatarFailed,
   deleteOldImage,

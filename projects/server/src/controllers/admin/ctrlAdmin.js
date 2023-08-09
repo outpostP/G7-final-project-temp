@@ -69,14 +69,13 @@ async function addCategory (req, res) {
 };
     
 async function getAdmin(req, res) {
-    try {
+  try {
     const user = await Users.findAll();
-    return res.status(200).json({data: user});
-    }
-    catch (err) {
-        console.error('error', err)
-        return res.status(500).json({message: err.message})
-    }
+    return res.status(200).json({ data: user });
+  } catch (err) {
+    console.error("error", err);
+    return res.status(500).json({ message: err.message });
+  }
 }
 
 async function updateCategory (req, res) {

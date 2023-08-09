@@ -20,11 +20,10 @@ import CategoryEdit, { currentCategoryLoader } from "./pages/AdminCategoryEdit";
 import CategoryLayout from "./Layout/Category";
 import AddCategoryForm from "./pages/AdminProductAdd";
 import AdminLayout from "./Layout/AdminLayouts";
-import Checkout, { checkoutLoader } from "./pages/CashierCheckout";
 
 function checkIsAdmin() {
-  const role = localStorage.getItem('isAdmin');
-  return role === 'true';
+  const role = localStorage.getItem("isAdmin");
+  return role === "true";
 }
 
 function ProtectedAdminRoute() {
@@ -33,7 +32,7 @@ function ProtectedAdminRoute() {
 
   useEffect(() => {
     if (!isAdmin) {
-      navigate('/user');
+      navigate("/user");
     }
   }, [isAdmin, navigate]);
 
@@ -46,7 +45,7 @@ function ProtectedUserRoute() {
 
   useEffect(() => {
     if (isAdmin) {
-      navigate('/admin');
+      navigate("/admin");
     }
   }, [isAdmin, navigate]);
 
@@ -70,22 +69,25 @@ function ProtectedUserRoute() {
     return children;
   }
 
-function UserDashboard() {
-  return <h1>UserDashboard</h1>;
-}
 
-function UserSettings() {
-  return <h1>UserSettings</h1>;
-}
 
-function UserProfile() {
-  return <h1>UserProfile</h1>;
-}
+// function ProtectedRoute({ children }) {
+//   const navigate = useNavigate();
+//   const isAuthenticated = checkIsAuthenticated();
+
+//   if (!isAuthenticated) {
+//     navigate("/login");
+//     return null;
+//   }
+
+//   return children;
+// }
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Homepage />}>
       <Route index element={<LoginForm />} />
+      {/* <Route path="reset-password/:token" element={<ResetPassword />} /> */}
       <Route path="admin" element={<ProtectedAdminRoute />}>
         <Route index element={<ProtectedRoute><AdminLayout /></ProtectedRoute>} /> 
         <Route path="reports" element={<ProtectedRoute><ReportLayout /></ProtectedRoute>}>
@@ -105,17 +107,21 @@ const router = createBrowserRouter(
         </Route>
       </Route>
       <Route path="user" element={<ProtectedUserRoute />}>
-        <Route index element={<ProtectedRoute><StorePage /></ProtectedRoute>} /> 
-        <Route path="checkout/:id" element={<ProtectedRoute><Checkout /></ProtectedRoute>} loader={checkoutLoader} /> 
+        <Route
+          index
+          element={
+            <ProtectedRoute>
+              <StorePage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
     </Route>
   )
 );
 
 function App() {
-  return (
-    <RouterProvider router={router}/>
-  );
+  return <RouterProvider router={router} />;
 }
 
-export default App;
+export default App
