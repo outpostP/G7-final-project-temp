@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table, Thead, Tbody, Tr, Th, Td, TableCaption } from "@chakra-ui/react";

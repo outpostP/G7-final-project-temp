@@ -181,7 +181,6 @@ async function createProfile(id, transaction) {
         throw new Error("Failed to create user's profile");
     }
 }
-// `http://localhost:8000/${product.productImage}`
 async function getProduct(req, res){
     try {
         console.log(req.query)
@@ -236,7 +235,7 @@ async function getProductAdmin(req, res){
         })();
         console.log(size)
   
-        const products = await getProductsAndInclude(where, order, offset, limit);
+        const products = await getProductsAndIncludeAdmin(where, order, offset, limit);
   
         return res.status(200).json({
             message: "Products fetched successfully",
@@ -294,6 +293,7 @@ const getProductsAndInclude = async (where, order, offset, limit) => {
     const includeOptions = [
         { model: Category },
     ];
+    where.isActive = true;
 
     return await Product.findAll({
         where,
@@ -304,6 +304,20 @@ const getProductsAndInclude = async (where, order, offset, limit) => {
     });
 };
 
+const getProductsAndIncludeAdmin = async (where, order, offset, limit) => {
+    const includeOptions = [
+        { model: Category },
+    ];
+
+
+    return await Product.findAll({
+        where,
+        order,
+        offset,
+        limit,
+        include: includeOptions,
+    });
+};
 
 
 async function addProduct(req,res){
@@ -527,21 +541,18 @@ async function cartTotal() {
         group: ["Cart.id"]
       });
   
-      // Each cart will have a property "totalProductQuantity" representing the sum of product quantities in that cart.
       console.log(carts);
     } catch (error) {
       console.error("Error fetching carts:", error);
     }
 }
 
-
   async function createTransaction(req, res) {
     try {
         await db.sequelize.transaction(async (t) => {
             const cartItemsObject = req.body;
-            const cartItems = cartItemsObject.cartItems; // Extract the cartItems array
+            const cartItems = cartItemsObject.cartItems; 
 
-            // Calculate totalItem and totalPrice
             let totalItem = 0;
             let totalPrice = 0;
 
@@ -549,19 +560,15 @@ async function cartTotal() {
                 totalItem += item.quantity;
                 totalPrice += item.quantity * item.Product.productPrice;
             }
-
-            // Create a new Transaction entry
             const transaction = await Transaction.create(
                 {
                     userId: cartItems[0].Cart.userId,
                     totalPrice: totalPrice,
                     totalItem: totalItem,
-                    // other fields
+                   
                 },
-                { transaction: t } // Associate the transaction with the Sequelize transaction
+                { transaction: t } 
             );
-
-            // Create Transaction_Product entries for each cart item
             for (const item of cartItems) {
                 await TP.create(
                     {
@@ -569,14 +576,13 @@ async function cartTotal() {
                         productId: item.Product.id,
                         productPrice: item.Product.productPrice,
                         quantity: item.quantity,
-                        // other fields
                     },
-                    { transaction: t } // Associate the transaction with the Sequelize transaction
+                    { transaction: t } 
                 );
             }
+            res.status(201).json({ message: 'Cart items sent successfully', data: transaction.id });
         });
 
-        res.status(201).json({ message: 'Cart items sent successfully' });
     } catch (error) {
         console.error('Error sending cart:', error);
         res.status(500).json({ error: 'An error occurred' });
@@ -589,7 +595,7 @@ async function cartTotal() {
     try {
       const { startDate, endDate } = req.query;
   
-      let whereClause = { isPaid: true };
+      let whereClause = { isPaid: true }
       if (startDate && endDate) {
         
           whereClause = {
@@ -661,41 +667,96 @@ async function getTransactionId(req, res) {
 
         res.status(200).json({ data: transaction });
     } catch (error) {
-        console.error(error); // Log the error for debugging purposes
+        console.error(error); 
         res.status(500).json({ error: 'An error occurred' });
     }
 }
-async function resetCart(req, res) {
+
+async function transactionCashier (req, res) {
     try {
-        const {id} = req.params
-        await db.sequelize.transaction(async (t) => {
-            // Reset values in the Cart model
-            await Cart.update(
-              {
-                totalPrice: 0,
-                totalItem: 0,
-              },
-              {
-                where: { id: id },
-                transaction: t, // associate the query with the transaction
-              }
-            );
-      
-            // Delete all Cart_Product records with the Cart id
-            await Cart_Product.destroy({
-              where: { cartId: id },
-              transaction: t, // associate the query with the transaction
-            });
-      
-            // Commit the transaction
-            await t.commit();
-      
-            res.status(200).json({ message: 'Cart deleted successfully.' });
-          });
-        } catch (error) {
-          console.error(error);
-          res.status(500).json({ message: 'Internal server error.' });
+        const { id } = req.params;
+        const transaction = await Transaction.findByPk(id, {
+            where: {
+              isPaid: false
+            },
+          include: [
+            {
+              model: TP,
+              include: [
+                {
+                  model: Product
+                }
+              ],
+            }
+        ]
+        });
+    
+        if (!transaction) {
+          res.status(404).json({ error: 'Transaction not found' });
+          return;
         }
+    
+        res.status(200).json({ data: transaction });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred' });
+      }
 }
 
-module.exports = {resetCart, getCategoryFree,getAllUnpaidTransaction,getProductAdmin,deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}
+async function resetCart(req, res) {
+    try {
+      const { id } = req.params;
+      await db.sequelize.transaction(async (t) => {
+        await Cart.update(
+          {
+            totalPrice: 0,
+            totalItem: 0,
+          },
+          {
+            where: { id: id },
+            transaction: t,
+          }
+        );
+  
+        await Cart_Product.destroy({
+          where: { cartId: id },
+          transaction: t,
+        });
+  
+        // No need to explicitly commit the transaction here,
+        // as the transaction automatically commits after the block
+      });
+  
+      // Send response after the transaction is complete
+      res.status(200).json({ message: 'Cart deleted successfully.' });
+    } catch (error) {
+      // Handle errors and send appropriate error response
+      console.error(error);
+      res.status(500).json({ message: 'Error resetting cart.' });
+    }
+  }
+  
+
+async function payment (req,res) {
+    try {
+        const {id} = req.params;
+        await db.sequelize.transaction(async(t) =>{
+            await Transaction.update(
+                {
+                    isPaid: true
+                },
+                {
+                    where: {
+                        id: id
+                    },
+                    transaction: t
+                }
+            )
+        })
+        res.status(200).json({message: 'Payment recorded'})
+    } catch (error) {
+        res.json(500).json({message: error})
+    }
+}
+
+module.exports = {transactionCashier,payment,resetCart, getCategoryFree,getAllUnpaidTransaction,getProductAdmin,deleteCartItems,createTransaction, getAllTransaction, getTransactionId,cartTotal,getCartItems,getCart,login,updateProduct,updateCart,getCategory, addCategory, getAdmin, getCashierAll, addCashier, getProduct, addProduct, updateCategory, deleteCategory, getCategoryId, getProductId}

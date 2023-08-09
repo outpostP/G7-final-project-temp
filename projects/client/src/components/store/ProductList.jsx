@@ -10,9 +10,7 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
   const [totalPage, setTotalPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState('desc');
 
- 
   useEffect(() => {
     const fetchCategories = async () => {
       const url = 'http://localhost:8000/admin/cateall';
@@ -25,28 +23,24 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
-        let url = `http://localhost:8000/admin/productA?&sort=${sortOrder}&productName=${searchQuery}&page=${currentPage}`;
+        let url = `http://localhost:8000/admin/product?productName=${searchQuery}&page=${currentPage}`;
 
         if (categoryId) {
           url += `&id_category=${categoryId}`;
         }
 
         const response = await axios.get(url);
-        console.log('response', response)
-        const { data, totalPages } = response.data;
-        console.log('pages from api',totalPages)
+        const { data } = response.data;
         setProducts(data.products);
         setTotalPage(data.totalPages);
-        console.log('pages from state', totalPage)
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchData();
-  }, [categoryId, currentPage, searchQuery, sortOrder]);
-  console.log(totalPage)
+  }, [categoryId, currentPage, searchQuery]);
+
   const handleCategoryChange = (event) => {
     const selectedCategoryId = parseInt(event.target.value, 10);
     setCategoryId(selectedCategoryId === 0 ? null : selectedCategoryId);
@@ -63,10 +57,6 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
     setSearchQuery(event.target.value);
   };
 
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-  };
-
   const handleCartUpdate = async () => {
     try {
       const response = await axios.get('http://localhost:8000/admin/cart/item');
@@ -80,31 +70,29 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
 
   return (
     <>
-    <Flex direction="column" align="center" mt={4}>
-      <Box mb={4}>
-        <Input
-          placeholder="Search"
-          value={searchQuery}
-          onChange={handleSearch}
-        />
-      </Box>
-      <Flex mb={4}>
-        <Select
-          placeholder="All Categories"
-          onChange={handleCategoryChange}
-        >
-          <option value={0}>All Categories</option>
-          {categories.map((category) => (
-            <option value={category.id} key={category.id}>
-              {category.categoryName}
-            </option>
-          ))}
-        </Select>
-        <Button ml={2} onClick={toggleSortOrder}>
-          Sort {sortOrder === 'desc' ? 'Descending' : 'Ascending'}
-        </Button>
+      <Flex direction={{ base: 'column', md: 'row' }} align="center" mt={4}>
+        <Box mb={4}>
+          <Input
+            placeholder="Search"
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+        </Box>
+        <Flex mb={4}>
+          <Select
+            placeholder="All Categories"
+            onChange={handleCategoryChange}
+          >
+            <option value={0}>All Categories</option>
+            {categories.map((category) => (
+              <option value={category.id} key={category.id}>
+                {category.categoryName}
+              </option>
+            ))}
+          </Select>
+        </Flex>
       </Flex>
-      <SimpleGrid columns={3} spacing={10}>
+      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 4, md: 10 }}>
         {products.map((product) => (
           <ProductCard
             key={product.id}
@@ -144,9 +132,8 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
           </Button>
         </Flex>
       )}
-    </Flex>
-  </>
-);
+    </>
+  );
 };
 
 export default ProductList;

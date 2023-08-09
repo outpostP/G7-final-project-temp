@@ -20,6 +20,7 @@ import CategoryEdit, { currentCategoryLoader } from "./pages/AdminCategoryEdit";
 import CategoryLayout from "./Layout/Category";
 import AddCategoryForm from "./pages/AdminProductAdd";
 import AdminLayout from "./Layout/AdminLayouts";
+import Checkout, { checkoutLoader } from "./pages/CashierCheckout";
 
 function checkIsAdmin() {
   const role = localStorage.getItem('isAdmin');
@@ -105,9 +106,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path="user" element={<ProtectedUserRoute />}>
         <Route index element={<ProtectedRoute><StorePage /></ProtectedRoute>} /> 
-        <Route path="board" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} /> 
-        <Route path="settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} /> 
-        <Route path="profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} /> 
+        <Route path="checkout/:id" element={<ProtectedRoute><Checkout /></ProtectedRoute>} loader={checkoutLoader} /> 
       </Route>
     </Route>
   )
