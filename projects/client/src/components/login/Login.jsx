@@ -51,7 +51,7 @@ const fetchUser = async (values) => {
   }
 };
 
-export const Login = () => {
+const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
@@ -225,3 +225,5 @@ export const Login = () => {
     </form>
   );
 };
+
+export default LoginForm;

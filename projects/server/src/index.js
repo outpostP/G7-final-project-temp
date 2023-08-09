@@ -8,10 +8,7 @@ const PORT = process.env.PORT || 8000;
 const app = express();
 app.use(
   cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
-    ],
+    origin: ["http://localhost:3000"],
   })
 );
 
@@ -36,7 +33,6 @@ const {
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use("/admin", adminRouter);
-app.use("/cashier", cashierRouter);
 
 // ===========================
 

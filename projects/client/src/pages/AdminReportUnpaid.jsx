@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table, Thead, Tbody, Tr, Th, Td, TableCaption } from "@chakra-ui/react";
@@ -87,7 +88,7 @@ const TransactionUnpaid = () => {
                </Thead>
                <Tbody>
                   {transactions.map((transaction) => (
-                        <Tr>
+                        <Tr key={transaction.id}>
                            <Td>{transaction.id}</Td>
                            <Td>{transaction.userId}</Td>
                            <Td>${transaction.totalPrice}</Td>

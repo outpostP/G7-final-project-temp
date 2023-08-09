@@ -1,10 +1,10 @@
-/* eslint-disable react/jsx-no-duplicate-props */
-import { Box, Table, Thead, Tbody, Tr, Th, Td, TableCaption, FormControl,Select, FormLabel, Input, Button } from "@chakra-ui/react";
-import { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import { FormControl, Select, FormLabel, Input, Button } from "@chakra-ui/react";
+import { useState, useRef, useEffect } from "react";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProductAdd = () => {
-
   const [formData, setFormData] = useState({});
   const fileInputRef = useRef(null);
   const [categories, setCategories] = useState([]);
@@ -12,9 +12,10 @@ const ProductAdd = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const url = 'http://localhost:8000/admin/cate';
+      const url = "http://localhost:8000/admin/cateall";
       const response = await axios.get(url);
       setCategories(response.data.data);
+      console.log(response.data.data);
     };
     fetchCategories();
   }, []);
@@ -38,24 +39,27 @@ const ProductAdd = () => {
     if (formData.productDescription) {
       formDataToSend.append("productdes", formData.productDescription);
     }
-    if (formData.categoryId) {
-      formDataToSend.append("category", formData.categoryId);
+    if (categoryId) {
+      formDataToSend.append("category", categoryId);
     }
     if (fileInputRef.current.files[0]) {
-      formDataToSend.append("file", fileInputRef.current.files[0]);
+      formDataToSend.append("productImage", fileInputRef.current.files[0]);
     }
 
-    
-
     try {
-      const response = await axios.post('http://localhost:8000/admin/product', formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:8000/admin/product",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       // Handle response
       console.log(response.data);
+      toast.success(response.data.message);
 
       // Reset the form
       setFormData({});
@@ -63,6 +67,7 @@ const ProductAdd = () => {
     } catch (error) {
       // Handle error
       console.error(error);
+      toast.error("An error occurred");
     }
   };
 
@@ -75,32 +80,55 @@ const ProductAdd = () => {
 
   return (
     <div>
-           <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-        <FormControl>
+      <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+        <FormControl className="form-control">
           <FormLabel>Product Name</FormLabel>
-          <Input type="text" name="productName" value={formData.productName || ''} onChange={handleChange} />
+          <Input
+            type="text"
+            name="productName"
+            value={formData.productName || ""}
+            onChange={handleChange}
+          />
         </FormControl>
-        <FormControl>
+        <FormControl className="form-control">
           <FormLabel>Product Price</FormLabel>
-          <Input type="text" name="productPrice" value={formData.productPrice || ''} onChange={handleChange} />
+          <Input
+            type="text"
+            name="productPrice"
+            value={formData.productPrice || ""}
+            onChange={handleChange}
+          />
         </FormControl>
-        <FormControl>
+        <FormControl className="form-control">
           <FormLabel>Product Description</FormLabel>
-          <Input type="text" name="productDescription" value={formData.productDescription || ''} onChange={handleChange} />
+          <Input
+            type="text"
+            name="productDescription"
+            value={formData.productDescription || ""}
+            onChange={handleChange}
+          />
         </FormControl>
-        <Select placeholder="All Categories" onChange={handleCategoryChange} name="categoryId" value={formData.categoryId || ''} onChange={handleChange}>
-  {categories.map((category) => (
-    <option value={category.id} key={category.id}>
-      {category.categoryName}
-    </option>
-  ))}
-</Select>
-        <FormControl>
+        <Select
+          placeholder="All Categories"
+          onChange={handleCategoryChange}
+          name="categoryId"
+          value={categoryId || ""}
+        >
+          {categories.map((category) => (
+            <option value={category.id} key={category.id}>
+              {category.categoryName}
+            </option>
+          ))}
+        </Select>
+        <FormControl className="form-control">
           <FormLabel>Image</FormLabel>
           <Input type="file" name="productImage" ref={fileInputRef} />
         </FormControl>
-        <Button type="submit" colorScheme="teal" mt={4}>Submit</Button>
+        <Button type="submit" colorScheme="teal" mt={4}>
+          Submit
+        </Button>
       </form>
+      <ToastContainer />
     </div>
   );
 };

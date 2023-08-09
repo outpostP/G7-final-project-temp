@@ -20,7 +20,7 @@ export const SidebarIcon = (isAdmin) => {
     navigate("/admin/reports");
   };
   const toCategory = () => {
-    navigate("/admin");
+    navigate("/admin/category");
   };
 
   if (dataAdmin) {

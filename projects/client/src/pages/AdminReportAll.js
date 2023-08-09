@@ -5,12 +5,15 @@ import { format } from 'date-fns';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import LineChart from './LineChart';
+import { FaLink } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom';
 
 const TransactionList = () => {
    const [transactions, setTransactions] = useState([]);
    const [startDate, setStartDate] = useState(null);
    const [endDate, setEndDate] = useState(null);
    const [showGraph, setShowGraph] = useState(false);
+   const navigate = useNavigate()
 
    const handleStartDateChange = (date) => {
       setStartDate(date);
@@ -44,7 +47,7 @@ const TransactionList = () => {
 
       fetchTransactions();
    }, [startDate, endDate]);
-
+console.log(transactions)
    return (
       <div>
          <DatePicker
@@ -93,6 +96,14 @@ const TransactionList = () => {
                         <Td>{transaction.totalItem}</Td>
                         <Td>{transaction.isPaid ? 'Yes' : 'No'}</Td>
                         <Td>{format(new Date(transaction.createdAt), 'yyyy-MM-dd HH:mm:ss')}</Td>
+                        <Td>
+      <button
+          onClick={() => { navigate(`${transaction.id}`) }}
+          style={{ fontSize: '12px', padding: '4px 8px', display: 'flex', alignItems: 'center' }}
+        >
+          <FaLink style={{ marginRight: '4px' }} />
+        </button>
+      </Td>
                      </Tr>
                   ))}
                </Tbody>

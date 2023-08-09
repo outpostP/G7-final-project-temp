@@ -38,9 +38,9 @@ export const Sidebar = () => {
 
   return (
     <>
-      <Box borderWidth="1px" w="120px" h="100vh" pb="80px">
+      <Box borderWidth="1px" w="120px" h="100vh" pb="70px">
         <Flex h="full" flexDirection="column" alignItems="center">
-          <Wrap pt="20px" pb="100px">
+          <Wrap pt="10px" pb="70px">
             <WrapItem>
               <ChangeAvatarSidebar />
             </WrapItem>
