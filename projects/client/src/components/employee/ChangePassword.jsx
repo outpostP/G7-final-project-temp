@@ -10,7 +10,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getAllCashier } from "../../services/reducer/employeeReducer";
 
 const baseUrl = "http://localhost:8000/";
@@ -39,6 +39,7 @@ const updatePassword = async (userId) => {
 };
 
 export const ResetPasswordModal = ({ isOpen, onClose, item }) => {
+  const page = useSelector((state) => state.dataEmployee.currentPage);
   const dispatch = useDispatch();
   const toast = useToast();
 
@@ -56,7 +57,7 @@ export const ResetPasswordModal = ({ isOpen, onClose, item }) => {
     const result = await updatePassword(userId);
     if (result[0] === "success") {
       handleToast("success", "Successfully reset password");
-      dispatch(getAllCashier());
+      dispatch(getAllCashier(page));
       onClose();
     } else {
       handleToast("error", "Failed reset password");
