@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 const ProductCard = ({ product, cartItems, onUpdateCartItems, setRefreshCart }) => {
   const [quantity, setQuantity] = useState(1);
-
+  const token = localStorage.getItem("token");
   const handleQuantityChange = (value) => {
     setQuantity(value);
   };
@@ -14,11 +14,15 @@ const ProductCard = ({ product, cartItems, onUpdateCartItems, setRefreshCart }) 
 
   const handleUpdateCart = async () => {
     try {
-      const response = await axios.put('http://localhost:8000/admin/cart/item', {
+      const response = await axios.put('http://localhost:8000/cashier/cart/item', {
         cartId: cartId,
         productId: product.id,
         quantity: quantity
-      });
+      },{ 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       console.log(response)
       onUpdateCartItems();
       setRefreshCart(true);
@@ -29,7 +33,7 @@ const ProductCard = ({ product, cartItems, onUpdateCartItems, setRefreshCart }) 
 
   const handleDeleteItem = async () => {
     try {
-      await axios.delete('http://localhost:8000/admin/cart/item', {
+      await axios.delete('http://localhost:8000/cashier/cart/item', {
         data: {
           cartId: cartId,
           productId: product.id

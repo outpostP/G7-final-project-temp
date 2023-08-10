@@ -1,12 +1,10 @@
 import { Table, Thead, Tbody, Tr, Th, Td, TableCaption } from "@chakra-ui/react";
 import { useLoaderData, useParams } from 'react-router-dom'
-
+const token = localStorage.getItem("token");
 
 const TransactionList = () => {
     const {id} = useParams();
     const currTransaction = useLoaderData().data.Transaction_Products;
-    console.log(currTransaction)
-
 
     return (
         <div>
@@ -38,7 +36,12 @@ export default TransactionList;
 export const currentTransactionLoader = async ({params}) => {
     const {id} = params;
 
-    const res = await fetch(`http://localhost:8000/admin/transaction/${id}`)
+    const res = await fetch(`http://localhost:8000/admin/transaction/${id}`, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": `Bearer ${token}`
+        },
+      })
 
     return res.json();
 }

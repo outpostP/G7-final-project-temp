@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Table, Thead, Tbody, Tr, Th, Td, Button, Select, Input, Flex, Box } from '@chakra-ui/react';
 import axios from 'axios';
 import { FaLink, FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const ProductTable = () => {
   const [products, setProducts] = useState([]);
@@ -12,27 +13,35 @@ const ProductTable = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
   const [sortField, setSortField] = useState('productName');
-
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const fetchCategories = async () => {
+    const response = await axios.get('http://localhost:8000/gen/cateall');
+    setCategories(response.data.data);
+  };
+  
   useEffect(() => {
-    const fetchCategories = async () => {
-      const url = 'http://localhost:8000/admin/cate';
-      const response = await axios.get(url);
-      setCategories(response.data.data.category);
-    };
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try{
-        const response = await axios.get('http://localhost:8000/admin/productA');
-        const { data } = response.data;
-        setProducts(data.products);
-      }
-      catch (err) {
-        console.log(err);
-      }
+
+  
+  const fetchProduct = async () => {
+    try{
+      const response = await axios.get('http://localhost:8000/admin/productA', { 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
+      const { data } = response.data;
+      setProducts(data.products);
     }
+    catch (err) {
+      console.log(err);
+    }
+  }
+  
+  useEffect(() => {
     fetchProduct()
   },[])
 
@@ -49,7 +58,11 @@ const ProductTable = () => {
         url += `&id_category=${categoryId}`;
       }
 
-      const response = await axios.get(url);
+      const response = await axios.get(url,{ 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       const { data } = response.data;
       setProducts(data.products);
       setTotalPage(data.totalPages);
@@ -59,7 +72,7 @@ const ProductTable = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(products);
   }, [categoryId, currentPage, searchQuery, sortOrder, sortField]);
 
   const handleCategoryChange = (event) => {
@@ -106,7 +119,7 @@ const ProductTable = () => {
         <Flex ml="auto" alignItems="center">
           <Button
             onClick={() => {
-              window.location.href = 'http://localhost:3000/admin/products/add';
+             navigate('/add') ;
             }}
             colorScheme="teal"
           >
@@ -133,7 +146,9 @@ const ProductTable = () => {
                 <Td>{product.id}</Td>
                 <Td>{product.productName}</Td>
                 <Td>{product.productPrice}</Td>
-                <Td>{product.Category.categoryName}</Td>
+                <Td> {product.Category && product.Category.isActive
+          ? product.Category.categoryName
+          : 'none'}</Td>
                 <Td>
                   <Box width="100px" height="100px">
                     <img

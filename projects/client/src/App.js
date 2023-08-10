@@ -4,22 +4,22 @@ import "./App.css";
 import { createBrowserRouter, createRoutesFromElements,useNavigate, Route, RouterProvider, Redirect, Outlet } from "react-router-dom";
 import StorePage from "./components/store/StorePage";
 // import Sidebar from "./Layout/Sidebar";
-import Homepage from "./Layout/Homepage";
+import Homepage from "./components/store/Layout/Homepage";
 import LoginForm from "./components/login/Login";
 import AdminReportAll from './pages/AdminReportAll'
 import { useEffect } from 'react';
 import ProductTable from "./pages/AdminProductAll";
 import TransactionList, {currentTransactionLoader} from "./pages/AdminReportPage";
-import ReportLayout from "./Layout/reports";
+import ReportLayout from "./components/store/Layout/reports";
 import ProductList, { currentProductLoader } from "./pages/AdminProductPage";
 import ProductAdd from "./pages/AdminProductAdd";
-import ProductLayout from "./Layout/AdminProducts";
+import ProductLayout from "./components/store/Layout/AdminProducts";
 import TransactionUnpaid from "./pages/AdminReportUnpaid";
 import CategoryTable from "./pages/AdminCategoryPage";
 import CategoryEdit, { currentCategoryLoader } from "./pages/AdminCategoryEdit";
-import CategoryLayout from "./Layout/Category";
+import CategoryLayout from "./components/store/Layout/Category";
 import AddCategoryForm from "./pages/AdminProductAdd";
-import AdminLayout from "./Layout/AdminLayouts";
+import AdminLayout from "./components/store/Layout/AdminLayouts";
 import EmployeePage from "./pages/AdminEmployeePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage"
 import Checkout, {checkoutLoader} from "./pages/CashierCheckout";
@@ -98,7 +98,7 @@ const router = createBrowserRouter(
     <Route index element={<ProtectedRoute><AdminReportAll /></ProtectedRoute>} /> 
     <Route path="unpaid" element={<ProtectedRoute><TransactionUnpaid />  </ProtectedRoute>} /> 
     <Route path=":id" element={<ProtectedRoute><TransactionList />  </ProtectedRoute>} loader={currentTransactionLoader} /> 
-</Route>
+  </Route>
     <Route path="products" element={<ProtectedRoute><ProductLayout /></ProtectedRoute>} > 
       <Route index element={<ProtectedRoute><ProductTable /></ProtectedRoute>} /> 
       <Route path="add" element={<ProtectedRoute><ProductAdd /></ProtectedRoute>}  /> 

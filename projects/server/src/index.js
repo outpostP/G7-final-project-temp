@@ -26,12 +26,15 @@ const db = require("../models");
 // NOTE : Add your routes here
 app.use('/', express.static(path.resolve(__dirname, '../')))
 //routes
-const { authRouter, profileRouter, adminRouter } = require("./routers");
+const { authRouter, profileRouter, adminRouter, generalRouter  } = require("./routers");
 
 //middleware
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use('/admin', adminRouter);
+app.use('/cashier', adminRouter);
+app.use('/gen', generalRouter);
+
 
 // ===========================
 

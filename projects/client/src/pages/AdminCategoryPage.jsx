@@ -4,16 +4,22 @@ import axios from 'axios';
 import { FaLink } from 'react-icons/fa';
 import { IconButton } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
 
 const CategoryTable = () => {
   const [categories, setCategories] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
   const fetchCategories = async () => {
     try {
       const url = `http://localhost:8000/admin/cate?page=${currentPage}`;
-      const response = await axios.get(url);
+      const response = await axios.get(url,{ 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       const { data } = response.data;
       setTotalPages(data.totalPages);
       setCategories(data.category);
@@ -24,12 +30,16 @@ const CategoryTable = () => {
 
   useEffect(() => {
     fetchCategories();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const handleDelete = async (id) => {
     try {
-      await axios.patch(`http://localhost:8000/admin/cate/${id}`);
-      console.log(id)
+      await axios.delete(`http://localhost:8000/admin/cate/${id}`,{ 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       fetchCategories();
     } catch (error) {
       console.log(error);
@@ -43,7 +53,7 @@ const CategoryTable = () => {
   };
 
   const handleAdd = () => {
-    window.location.href = `http://localhost:3000/admin/category/add`;
+    navigate('add');
   };
 
   const renderPaginationButtons = () => {

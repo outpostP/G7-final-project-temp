@@ -11,22 +11,24 @@ const ProductList = () => {
   const [formData, setFormData] = useState({});
   const fileInputRef = useRef(null);
   const [categories, setCategories] = useState([]);
-  // const [radio, setRadio] = useState(1);
   const [active, setActive] = useState(product.isActive)
-  console.log("isactive state", active)
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
       const url = 'http://localhost:8000/admin/cate';
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": `Bearer ${token}`
+        },
+      });
       setCategories(response.data.data.category);
     };
     fetchCategories();
   }, []);
   
- console.log(product.isActive)
-
+ const token = localStorage.getItem("token");
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -56,10 +58,10 @@ const ProductList = () => {
       const response = await axios.patch(`http://localhost:8000/admin/product/${id}`, formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
+          "Authorization": `Bearer ${token}`
         },
       });
-      
-      // Show success toast
+    
       Toast({
         title: "Success",
         description: "Product updated successfully.",
@@ -70,15 +72,10 @@ const ProductList = () => {
 
       setFormData({});
       fileInputRef.current.value = null;
-  
-      console.log(response.data); // Check the response data
-
-      // Redirect to '/products'
+      console.log(response.data); 
       navigate("/products");
     } catch (error) {
       console.error(error);
-
-      // Show error toast
       Toast({
         title: "Error",
         description: "Failed to update product.",
@@ -88,8 +85,6 @@ const ProductList = () => {
       });
     }
   };
-  
-  
 
   const handleChange = (e) => {
     setFormData((prevFormData) => ({
@@ -99,7 +94,7 @@ const ProductList = () => {
   };
 
 
-
+console.log(product)
   return (
     <div>
       <Table variant="striped" colorScheme="teal">
@@ -149,15 +144,7 @@ const ProductList = () => {
   onChange={(e) => setActive(e.target.checked)}
   colorScheme="teal"
 />
-{console.log(1321, active)}
-
-  {/* <Switch
-  isChecked={product.isActive}
-  onChange={() => setRadio(radio === 1 ? 0 : 1)}
-  colorScheme="teal"
-/> */}
 </FormControl>
-
         <Select placeholder="All Categories" name="categoryId" value={formData.categoryId || ''} onChange={handleChange}>
   {categories.map((category) => (
     <option value={category.id} key={category.id}>
@@ -179,8 +166,12 @@ export default ProductList;
 
 export const currentProductLoader = async ({ params }) => {
   const { id } = params;
-
-  const res = await fetch(`http://localhost:8000/admin/product/${id}`);
+  const token = localStorage.getItem("token");
+  const res = await fetch(`http://localhost:8000/admin/product/${id}`,{ 
+    headers: {
+      "Authorization": `Bearer ${token}`
+    },
+});
 
   return res.json();
 };

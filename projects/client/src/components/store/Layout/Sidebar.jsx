@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import { Sidebar } from "../components/sidebar/Sidebar";
+import { Sidebar } from "../../sidebar/Sidebar";
 import { useLocation } from "react-router-dom";
 
 const SidebarForm = () => {

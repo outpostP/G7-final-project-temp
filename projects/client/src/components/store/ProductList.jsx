@@ -10,11 +10,15 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
   const [totalPage, setTotalPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
     const fetchCategories = async () => {
-      const url = 'http://localhost:8000/admin/cateall';
-      const response = await axios.get(url);
+      const url = 'http://localhost:8000/gen/cateall';
+      const response = await axios.get(url, { 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       setCategories(response.data.data);
     };
     fetchCategories();
@@ -23,13 +27,17 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let url = `http://localhost:8000/admin/product?productName=${searchQuery}&page=${currentPage}`;
+        let url = `http://localhost:8000/cashier/product?productName=${searchQuery}&page=${currentPage}`;
 
         if (categoryId) {
           url += `&id_category=${categoryId}`;
         }
 
-        const response = await axios.get(url);
+        const response = await axios.get(url,{ 
+          headers: {
+            "Authorization": `Bearer ${token}`
+          },
+      });
         const { data } = response.data;
         setProducts(data.products);
         setTotalPage(data.totalPages);
@@ -59,7 +67,11 @@ const ProductList = ({ setCartItems, setRefreshCart }) => {
 
   const handleCartUpdate = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/admin/cart/item');
+      const response = await axios.get('http://localhost:8000/cashier/cart/item', { 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       const updatedCartItems = response.data;
       setCartItems(updatedCartItems);
       setRefreshCart(true);

@@ -14,7 +14,7 @@ const TransactionList = () => {
    const [endDate, setEndDate] = useState(null);
    const [showGraph, setShowGraph] = useState(false);
    const navigate = useNavigate()
-
+   const token = localStorage.getItem("token");
    const handleStartDateChange = (date) => {
       setStartDate(date);
    };
@@ -33,7 +33,9 @@ const TransactionList = () => {
             const startDateParam = startDate ? startDate.toISOString() : transactions[0]?.createdAt;
             const endDateParam = endDate ? endDate.toISOString() : transactions[transactions.length - 1]?.createdAt;
 
-            const response = await axios.get('http://localhost:8000/admin/transaction', {
+            const response = await axios.get('http://localhost:8000/admin/transaction', {headers: {
+               "Authorization": `Bearer ${token}`
+             },
                params: {
                   startDate: startDateParam,
                   endDate: endDateParam,

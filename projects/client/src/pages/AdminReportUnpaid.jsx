@@ -13,7 +13,7 @@ const TransactionUnpaid = () => {
    const [startDate, setStartDate] = useState(null);
    const [endDate, setEndDate] = useState(null);
    const [showGraph, setShowGraph] = useState(false);
-
+   const token = localStorage.getItem("token");
    const handleStartDateChange = (date) => {
       setStartDate(date);
    };
@@ -33,6 +33,9 @@ const TransactionUnpaid = () => {
             const endDateParam = endDate ? endDate.toISOString() : transactions[transactions.length - 1]?.createdAt;
 
             const response = await axios.get('http://localhost:8000/admin/unpaid', {
+               headers: {
+                 "Authorization": `Bearer ${token}`
+               },
                params: {
                   startDate: startDateParam,
                   endDate: endDateParam,

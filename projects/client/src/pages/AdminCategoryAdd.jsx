@@ -6,29 +6,21 @@ import "react-toastify/dist/ReactToastify.css";
 
 const CategoryAdd = () => {
   const [category, setCategory] = useState("");
-
+  const token = localStorage.getItem("token");
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const response = await axios.post(
         "http://localhost:8000/admin/cate",
-        { category }, // Sending the category as an object
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      // Handle response
-      console.log(response.data);
+        { category },{ 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       toast.success(response.data.message);
-
-      // Reset the form
       setCategory("");
     } catch (error) {
-      // Handle error
       console.error(error);
       toast.error("An error occurred");
     }

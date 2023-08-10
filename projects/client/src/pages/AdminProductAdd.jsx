@@ -9,11 +9,14 @@ const ProductAdd = () => {
   const fileInputRef = useRef(null);
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
-
+const token = localStorage.getItem("token");
   useEffect(() => {
     const fetchCategories = async () => {
-      const url = "http://localhost:8000/admin/cateall";
-      const response = await axios.get(url);
+      const response = await axios.get("http://localhost:8000/admin/cateall",{ 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       setCategories(response.data.data);
       console.log(response.data.data);
     };

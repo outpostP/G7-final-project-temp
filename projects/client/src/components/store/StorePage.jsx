@@ -9,12 +9,16 @@ const StorePage = () => {
  
   const [cartItems, setCartItems] = useState([]);
   const [refreshCart, setRefreshCart] = useState(false);
-
+  const token = localStorage.getItem("token");
   
 
   const fetchCartItems = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/admin/cart/item');
+      const response = await axios.get('http://localhost:8000/cashier/cart/item',{ 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       setCartItems(response.data);
       console.log(cartItems)
       setRefreshCart(false); 

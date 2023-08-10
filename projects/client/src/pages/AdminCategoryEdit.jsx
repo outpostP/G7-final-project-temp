@@ -4,13 +4,12 @@ import { useState } from "react";
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const token = localStorage.getItem("token");
 
 const CategoryEdit = () => {
     const { id } = useParams();
     const cate = useLoaderData();
     const navigate = useNavigate();
-
-    // Set state to hold user's input
     const [userInput, setUserInput] = useState(cate.categoryName);
 
     const handleSubmit = async (e) => {
@@ -19,30 +18,22 @@ const CategoryEdit = () => {
         try {
             const response = await axios.patch(`http://localhost:8000/admin/cate/${id}`, {
                 category: userInput
+            },{ 
+                headers: {
+                  "Authorization": `Bearer ${token}`
+                },
             });
-
-            // Handle response
             console.log(response.data);
-
-            // Show toast notification for success
             toast.success(response.data.message);
-
-            // Reset the form
             setUserInput('');
-
-            // Navigate to '/category'
             navigate('/admin/category');
 
         } catch (error) {
-            // Handle error
             console.error(error);
-
-            // Show toast notification for failure
             toast.error('Failed to update category.');
         }
     };
 
-    // Update userInput state every time user types into the input field
     const handleInputChange = (e) => {
         setUserInput(e.target.value);
     };
@@ -70,10 +61,7 @@ const CategoryEdit = () => {
                 onChange={handleInputChange}
                 placeholder="Enter new category name"
             />
-
             <Button type="submit">Update Category</Button>
-
-            {/* Toast notifications */}
             <ToastContainer />
         </Box>
     );
@@ -84,7 +72,11 @@ export default CategoryEdit;
 export const currentCategoryLoader = async ({params}) => {
     const {id} = params;
 
-    const res = await fetch(`http://localhost:8000/admin/cate/${id}`)
+    const res = await fetch(`http://localhost:8000/admin/cate/${id}`,{ 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    })
 
     return res.json();
 }

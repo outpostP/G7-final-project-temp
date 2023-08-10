@@ -9,17 +9,21 @@ import { useNavigate } from "react-router-dom";
 const Checkout = () => {
   const { id } = useParams();
   const checkout = useLoaderData().data.Transaction_Products;
-  console.log(checkout)
+  // console.log(checkout)
   const total = useLoaderData().data;
   const toast = useToast();
   const navigate = useNavigate();
-
+  const token = localStorage.getItem("token");
   const checkoutContainerWidth = useBreakpointValue({ base: "100%", sm: "80%", md: "60%", lg: "50%" });
   const checkoutContainerMargin = useBreakpointValue({ base: "0", sm: "auto", md: "auto", lg: "auto" });
 
   const handlePayment = async () => {
     try {
-      const payment = await axios.post(`http://localhost:8000/admin/checkout/${id}`);
+      const payment = await axios.post(`http://localhost:8000/cashier/checkout/${id}`,{ 
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+    });
       console.log(payment);
       toast({
         title: "Payment Successful",
@@ -28,7 +32,7 @@ const Checkout = () => {
         duration: 5000,
         isClosable: true,
       });
-      navigate("/user"); // Replace "/success-page" with the desired redirect URL
+      navigate("/user"); 
     } catch (error) {
       console.error(error);
     }
@@ -96,7 +100,7 @@ export default Checkout;
 
 export const checkoutLoader = async ({params}) => {
   const {id} = params;
-
+  
   const res = await fetch(`http://localhost:8000/admin/checkout/${id}`)
 
   return res.json();
