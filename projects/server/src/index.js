@@ -19,21 +19,20 @@ const db = require("../models");
 // db.sequelize.sync({ alter: true });
 
 
-
 //#region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
 app.use('/', express.static(path.resolve(__dirname, '../')))
 //routes
-const { authRouter, profileRouter, adminRouter, generalRouter  } = require("./routers");
+const { authRouter, profileRouter, adminRouter, generalRouter,cashierRouter   } = require("./routers");
 
-//middleware
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use('/admin', adminRouter);
-app.use('/cashier', adminRouter);
+app.use('/cashier', cashierRouter);
 app.use('/gen', generalRouter);
+//middleware
 
 
 // ===========================
@@ -60,13 +59,13 @@ app.use((err, req, res, next) => {
 //#endregion
 
 //#region CLIENT
-const clientPath = "../../client/build";
-app.use(express.static(join(__dirname, clientPath)));
+// const clientPath = "../../client/build";
+// app.use(express.static(join(__dirname, clientPath)));
 
-// Serve the HTML page
-app.get("*", (req, res) => {
-  res.sendFile(join(__dirname, clientPath, "index.html"));
-});
+// // Serve the HTML page
+// app.get("*", (req, res) => {
+//   res.sendFile(join(__dirname, clientPath, "index.html"));
+// });
 
 //#endregion
 

@@ -1,4 +1,4 @@
-import { Box, Flex, Button, Text, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Image } from '@chakra-ui/react';
+import { Box, Flex, Button, Text, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Image, useToast  } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 import { useState } from 'react';
@@ -6,16 +6,17 @@ import { useState } from 'react';
 const ProductCard = ({ product, cartItems, onUpdateCartItems, setRefreshCart }) => {
   const [quantity, setQuantity] = useState(1);
   const token = localStorage.getItem("token");
+  const toast = useToast();
+
   const handleQuantityChange = (value) => {
     setQuantity(value);
   };
 
-  const cartId = localStorage.getItem("cartId");
 
   const handleUpdateCart = async () => {
     try {
       const response = await axios.put('http://localhost:8000/cashier/cart/item', {
-        cartId: cartId,
+   
         productId: product.id,
         quantity: quantity
       },{ 
@@ -25,9 +26,33 @@ const ProductCard = ({ product, cartItems, onUpdateCartItems, setRefreshCart }) 
     });
       console.log(response)
       onUpdateCartItems();
-      setRefreshCart(true);
+      // setRefreshCart(true);
+      toast({
+        title: "Cart updated",
+        description: "Product quantity updated successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
       console.error(error);
+      let errorMessage = "An error occurred while updating the cart.";
+
+      if (error.response && error.response.status === 404) {
+        errorMessage = "Product not found.";
+      } else if (error.response && error.response.status === 400) {
+        errorMessage = "Invalid request. Please check your input.";
+      } else if (error.response && error.response.status === 500) {
+        errorMessage = "Internal server error. Please try again later.";
+      }
+
+      toast({
+        title: "Error",
+        description: errorMessage,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -35,15 +60,35 @@ const ProductCard = ({ product, cartItems, onUpdateCartItems, setRefreshCart }) 
     try {
       await axios.delete('http://localhost:8000/cashier/cart/item', {
         data: {
-          cartId: cartId,
           productId: product.id
         }
       });
-
       onUpdateCartItems();
       setRefreshCart(true);
+      toast({
+        title: "Item deleted",
+        description: "Product removed from the cart successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
       console.error("Error deleting item:", error);
+      let errorMessage = "An error occurred while deleting the item from the cart.";
+
+      if (error.response && error.response.status === 404) {
+        errorMessage = "Item not found.";
+      } else if (error.response && error.response.status === 500) {
+        errorMessage = "Internal server error. Please try again later.";
+      }
+
+      toast({
+        title: "Error",
+        description: errorMessage,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 

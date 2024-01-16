@@ -145,6 +145,7 @@ const getProductsAndIncludeAdmin = async (where, order, offset, limit) => {
 };
 
 async function addProduct(req,res){
+    console.log('add prod', req)
     try {
         const {productname, productprice, productdes, category}  = req.body;
         return db.sequelize.transaction(async (t) => {
@@ -154,6 +155,7 @@ async function addProduct(req,res){
                  productPrice: productprice,
                  productDescription: productdes,
                  productImage: req.file.path,
+                // productImage: 'aaaa',
                  categoryId: category
               },
               { transaction: t }
@@ -162,7 +164,7 @@ async function addProduct(req,res){
      });
     }
     catch (err) {
-        console.log(err)
+        console.error(err)
         return res.status(500).json({message: err.message});
     };
 };

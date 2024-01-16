@@ -19,11 +19,11 @@ const uploadAvatar = async (formData) => {
   }
 };
 
-export const ChangeAvatarSidebar = () => {
+export const ChangeAvatarSidebar = ({isAdmin}) => {
   const avatar = localStorage.getItem("avatar");
   const [avatarState, setAvatarState] = useState(avatar);
   const userId = localStorage.getItem("userId");
-  const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+  // const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
   const toast = useToast();
 
   const handleToast = (props, content) => {

@@ -73,7 +73,7 @@ const ProductList = () => {
       setFormData({});
       fileInputRef.current.value = null;
       console.log(response.data); 
-      navigate("/products");
+      navigate("/admin/products");
     } catch (error) {
       console.error(error);
       Toast({

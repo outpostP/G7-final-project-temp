@@ -33,18 +33,10 @@ const fetchUser = async (values) => {
   try {
     const { data } = await axios.post(`${baseUrl}auth/login`, values);
     const token = data.data.token;
-    dataUser = data.data;
-    if (token && dataUser.isAdmin) {
-      localStorage.setItem("userId", dataUser.id);
-      localStorage.setItem("isAdmin", dataUser.isAdmin);
+    dataUser = data.data
+
       localStorage.setItem("token", token);
-    } else if (token && !dataUser.isAdmin) {
-      localStorage.setItem("userId", dataUser.id);
-      localStorage.setItem("cartId", dataUser.cartId);
-      localStorage.setItem("isAdmin", dataUser.isAdmin);
-      localStorage.setItem("avatar", dataUser.avatar);
-      localStorage.setItem("token", token);
-    }
+
     return ["success", dataUser];
   } catch (err) {
     return "error";

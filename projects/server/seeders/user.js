@@ -1,14 +1,16 @@
 "use strict";
+const bcrypt = require("bcrypt");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    const hashedPassword = await bcrypt.hash("Abc@123", 10);
+
     await queryInterface.bulkInsert("Users", [
       {
         username: "admin1",
         email: "admin1@mailinator.com",
-        password:
-          "$2b$10$aSsG1v5vHv/FKfY0jhpOjOrORXXr2rruZwa6X16EYqleY.ULLg7oe",
+        password: hashedPassword,
         isAdmin: 1,
         createdAt: "2023-01-27 07:52:27",
         updatedAt: "2023-01-27 07:52:27",
@@ -16,8 +18,7 @@ module.exports = {
       {
         username: "cashier1",
         email: "cashier1@mailinator.com",
-        password:
-          "$2b$10$aSsG1v5vHv/FKfY0jhpOjOrORXXr2rruZwa6X16EYqleY.ULLg7oe",
+        password: hashedPassword,
         isAdmin: 0,
         createdAt: "2023-01-27 07:52:27",
         updatedAt: "2023-01-27 07:52:27",
@@ -25,8 +26,7 @@ module.exports = {
       {
         username: "cashier2",
         email: "cashier2@mailinator.com",
-        password:
-          "$2b$10$aSsG1v5vHv/FKfY0jhpOjOrORXXr2rruZwa6X16EYqleY.ULLg7oe",
+        password: hashedPassword,
         isAdmin: 0,
         createdAt: "2023-01-27 07:52:27",
         updatedAt: "2023-01-27 07:52:27",

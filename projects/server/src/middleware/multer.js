@@ -1,31 +1,25 @@
 const multer = require("multer");
 const fs = require("fs");
-const path = require("path");
 
-let defaultPath = "public/images";
+
+let defaultPath = 'public/image';
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    const isDirExist = fs.existsSync(
-      path.resolve(__dirname, `${defaultPath}/${file.fieldname}`)
-    );
-    if (!isDirExist) {
-      await fs.promises.mkdir(
-        path.resolve(__dirname, `${defaultPath}/${file.fieldname}`),
-        {
-          recursive: true,
-        }
-      );
-    }
+    const isDirectoryExist = fs.existsSync(`${defaultPath}/${file.fieldname}`);
+    if (!isDirectoryExist)
+      await fs.promises.mkdir(`${defaultPath}/${file.fieldname}`, {
+        recursive: true,
+      });
     cb(null, `${defaultPath}/${file.fieldname}`);
   },
+
   filename: (req, file, cb) => {
-    console.log(file);
     cb(
       null,
       `${file.fieldname}` +
         "-" +
         Date.now() +
-        Math.round(Math.random() * 10000000) +
+        Math.round(Math.random() * 100000) +
         "." +
         file.mimetype.split("/")[1]
     );
@@ -39,11 +33,11 @@ const fileFilter = (req, file, cb) => {
     fileType === "png" ||
     fileType === "jpg" ||
     fileType === "jpeg" ||
-    fileType === "gif"
+    fileType === "gif" 
   ) {
     cb(null, true);
   } else {
-    cb(new Error("file format WRONG"));
+    cb("File format is not accepted, Format: .png, .jpg, .jpeg, and .gif");
   }
 };
 

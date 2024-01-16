@@ -49,7 +49,7 @@ const ProfileController = {
 
   updateUsernameEmail: async (req, res) => {
     try {
-      const { cashierId, username, email } = req.body;
+      const { cashierId, username, email } = req.user;
 
       const userData = await commonService.findUserId(cashierId);
       if (!userData) {
@@ -94,7 +94,7 @@ const ProfileController = {
 
   updatePassword: async (req, res) => {
     try {
-      const { cashierId, password } = req.body;
+      const { cashierId, password } = req.user;
 
       const userData = await commonService.findUserId(cashierId);
       if (!userData) {
@@ -120,7 +120,7 @@ const ProfileController = {
 
   updateStatus: async (req, res) => {
     try {
-      const { cashierId, isActive } = req.body;
+      const { cashierId, isActive } = req.user;
 
       const userData = await commonService.findUserId(cashierId);
       if (!userData) {
@@ -148,8 +148,8 @@ const ProfileController = {
   updateAvatar: async (req, res) => {
     try {
       const avatarPath = req.file.path;
-      const { cashierId } = req.body;
-
+      const cashierId = req.body.cashierId
+    
       if (!avatarPath) {
         return profileService.validationAvatarFailed(
           res,

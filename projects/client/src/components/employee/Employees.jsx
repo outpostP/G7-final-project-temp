@@ -21,7 +21,7 @@ export const Employee = () => {
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const totalPage = result;
-  console.log(`testtttt${totalPage}`)
+  // console.log(`testtttt${totalPage}`)
   const dispatch = useDispatch();
 
   const openRegisterModal = () => {

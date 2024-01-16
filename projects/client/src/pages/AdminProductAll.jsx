@@ -28,7 +28,7 @@ const ProductTable = () => {
   
   const fetchProduct = async () => {
     try{
-      const response = await axios.get('http://localhost:8000/admin/productA', { 
+      const response = await axios.get('http://localhost:8000/admin/product', { 
         headers: {
           "Authorization": `Bearer ${token}`
         },
@@ -119,7 +119,7 @@ const ProductTable = () => {
         <Flex ml="auto" alignItems="center">
           <Button
             onClick={() => {
-             navigate('/add') ;
+             navigate('add') ;
             }}
             colorScheme="teal"
           >

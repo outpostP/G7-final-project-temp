@@ -1,4 +1,4 @@
-import { Avatar, Button, Switch, Td, Tr, useToast } from "@chakra-ui/react";
+import { Button, Switch, Td, Tr, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCashier } from "../../services/reducer/employeeReducer";

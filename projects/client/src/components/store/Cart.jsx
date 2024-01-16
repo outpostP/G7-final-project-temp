@@ -12,14 +12,19 @@ const Cart = ({ cartItems }) => {
   const totalPrice = cartItems.reduce((total, item) => total + item.Product.productPrice * item.quantity, 0);
   
   const handlePaymentAccountChange = (event) => {
-    setPaymentAccount(event.target.value);
-    
-    const paymentAmount = parseFloat(event.target.value);
-    const totalAmount = totalPrice;
-    
-    const change = paymentAmount - totalAmount;
-    setChangeAmount(change);
+    const input = event.target.value;
+    const paymentAmount = parseFloat(input);
+  
+    if (!isNaN(paymentAmount) || input === "") {
+      setPaymentAccount(input);
+      const totalAmount = totalPrice; 
+      const change = isNaN(paymentAmount) ? 0 : paymentAmount - totalAmount;
+      setChangeAmount(change);
+    } else {
+      console.error("Invalid input. Please enter a valid number.");
+    }
   };
+  
 
   const handleSendCart = async () => {
     try {
@@ -65,14 +70,14 @@ const Cart = ({ cartItems }) => {
       </Box>
       <Text mt="4">Total Price: {totalPrice}</Text>
       <Input
-        mt="4"
-        placeholder="0"
-        value={paymentAccount}
-        onChange={handlePaymentAccountChange}
-      />
-      <Text mt="4">Change Amount: {changeAmount}</Text>
+  mt="4"
+  placeholder="0"
+  value={paymentAccount}
+  onChange={handlePaymentAccountChange}
+/>
+<Text mt="4">Change Amount: {isNaN(changeAmount) ? 0 : changeAmount}</Text>
       <Button mt="4" colorScheme="blue" onClick={handleSendCart}>
-        Send Cart
+        Checkout
       </Button>
     </Box>
   );

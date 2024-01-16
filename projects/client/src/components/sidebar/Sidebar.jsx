@@ -1,4 +1,5 @@
 import React from "react";
+import { jwtDecode } from "jwt-decode";
 import {
   Box,
   Button,
@@ -16,8 +17,7 @@ import { SidebarIcon } from "./SidebarIcon";
 import { useNavigate } from "react-router-dom";
 import { ChangeAvatarSidebar } from "./ChangeAvatarSidebar";
 
-export const Sidebar = () => {
-  const isAdmin = localStorage.getItem("isAdmin");
+export const Sidebar = ({isAdmin, setIsAdmin}) => {
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -32,6 +32,7 @@ export const Sidebar = () => {
   };
   const logout = () => {
     navigate("/");
+    setIsAdmin(false)
     handleLogoutToast();
     localStorage.clear();
   };
@@ -42,17 +43,17 @@ export const Sidebar = () => {
         <Flex h="full" flexDirection="column" alignItems="center">
           <Wrap pt="10px" pb="70px">
             <WrapItem>
-              <ChangeAvatarSidebar />
+              <ChangeAvatarSidebar isAdmin={isAdmin}/>
             </WrapItem>
           </Wrap>
-          <SidebarIcon data={isAdmin} />
+          <SidebarIcon isAdmin={isAdmin} />
           <Spacer />
           <List>
             <ListItem>
               <Button w={"full"} variant="unstyled" onClick={logout}>
                 <Icon as={IoLogOutOutline} boxSize={"full"} />
               </Button>
-            </ListItem>
+            </ListItem> 
           </List>
         </Flex>
       </Box>

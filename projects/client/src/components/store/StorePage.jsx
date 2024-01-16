@@ -10,7 +10,6 @@ const StorePage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [refreshCart, setRefreshCart] = useState(false);
   const token = localStorage.getItem("token");
-  
 
   const fetchCartItems = async () => {
     try {
@@ -20,7 +19,7 @@ const StorePage = () => {
         },
     });
       setCartItems(response.data);
-      console.log(cartItems)
+      console.log('cart',response)
       setRefreshCart(false); 
     } catch (error) {
       console.error(error);

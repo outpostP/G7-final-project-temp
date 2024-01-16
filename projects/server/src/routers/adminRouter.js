@@ -9,7 +9,7 @@ const {verifyToken, verifyAdmin} = require('../middleware/auth')
 router.get('/cate',verifyToken, verifyAdmin, getCategory);
 router.post('/cate',verifyToken, verifyAdmin, addCategory);
 router.patch('/cate',verifyToken, verifyAdmin, updateCategory);
-router.get('/productA',verifyToken, verifyAdmin, getProductAdmin);
+router.get('/product',verifyToken, verifyAdmin, getProductAdmin);
 router.post('/product',verifyToken, verifyAdmin, multerUpload.single('productImage') ,addProduct);
 router.get('/transaction',verifyToken, verifyAdmin, getAllTransaction)
 router.get('/unpaid',verifyToken, verifyAdmin, getAllUnpaidTransaction)

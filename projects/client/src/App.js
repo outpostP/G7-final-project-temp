@@ -1,5 +1,5 @@
-// import axios from "axios";
-// import logo from "./logo.svg";
+import { jwtDecode } from "jwt-decode";
+
 import "./App.css";
 import { createBrowserRouter, createRoutesFromElements,useNavigate, Route, RouterProvider, Redirect, Outlet } from "react-router-dom";
 import StorePage from "./components/store/StorePage";
@@ -26,10 +26,16 @@ import Checkout, {checkoutLoader} from "./pages/CashierCheckout";
 import CategoryAdd from "./pages/AdminCategoryAdd";
 
 function checkIsAdmin() {
-  const role = localStorage.getItem("isAdmin");
-  return role === "true";
+  const token = localStorage.getItem('token');
+  if (token) {
+    const decoded = jwtDecode(token);
+    const isAdmin = decoded.isAdmin;
+    return isAdmin === true;
+  }
+  return false;
 }
-
+const isAdmin = checkIsAdmin();
+console.log(isAdmin )
 function ProtectedAdminRoute() {
   const navigate = useNavigate();
   const isAdmin = checkIsAdmin();

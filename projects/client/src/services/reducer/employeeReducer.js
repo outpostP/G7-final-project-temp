@@ -37,6 +37,7 @@ export const getAllCashier = (page) => {
           },
         }
       );
+      console.log('prof', data)
       dispatch(addDataUser(data.data));
       dispatch(totalPage(data.totalPages));
       dispatch(currentPage(page));

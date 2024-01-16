@@ -12,13 +12,14 @@ const ProductAdd = () => {
 const token = localStorage.getItem("token");
   useEffect(() => {
     const fetchCategories = async () => {
-      const response = await axios.get("http://localhost:8000/admin/cateall",{ 
+      const response = await axios.get("http://localhost:8000/admin/cate",{ 
         headers: {
           "Authorization": `Bearer ${token}`
         },
     });
-      setCategories(response.data.data);
-      console.log(response.data.data);
+    console.log(response)
+      setCategories(response.data.data.category);
+      console.log('res',response.data.data);
     };
     fetchCategories();
   }, []);
@@ -50,18 +51,20 @@ const token = localStorage.getItem("token");
     }
 
     try {
+      console.log('formdata', formDataToSend)
       const response = await axios.post(
         "http://localhost:8000/admin/product",
         formDataToSend,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${token}`
           },
         }
       );
 
       // Handle response
-      console.log(response.data);
+      console.log('res',response);
       toast.success(response.data.message);
 
       // Reset the form
@@ -69,7 +72,7 @@ const token = localStorage.getItem("token");
       fileInputRef.current.value = null;
     } catch (error) {
       // Handle error
-      console.error(error);
+      console.error('err',error);
       toast.error("An error occurred");
     }
   };

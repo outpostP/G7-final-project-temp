@@ -1,4 +1,4 @@
-import React from "react";
+import { jwtDecode } from "jwt-decode";
 import { Button, Icon, List, ListItem } from "@chakra-ui/react";
 import { IoFastFoodOutline } from "react-icons/io5";
 import { TbCategory } from "react-icons/tb";
@@ -7,8 +7,10 @@ import { BsPeople } from "react-icons/bs";
 import { TbReportAnalytics } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 
-export const SidebarIcon = (isAdmin) => {
-  const dataAdmin = JSON.parse(isAdmin.data);
+export const SidebarIcon = () => {
+  const token = localStorage.getItem('token')
+  const decode = jwtDecode(token)
+  const isAdmin = decode.isAdmin
   const navigate = useNavigate();
   const toEmployee = () => {
     navigate("/admin");
@@ -23,7 +25,7 @@ export const SidebarIcon = (isAdmin) => {
     navigate("/admin/category");
   };
 
-  if (dataAdmin) {
+  if (isAdmin) {
     return (
       <>
         <List spacing="25px">

@@ -8,6 +8,7 @@ const baseUrl = "http://localhost:8000/";
 
 const uploadAvatar = async (formData) => {
   const token = localStorage.getItem("token");
+  console.log("Token:", token);
   try {
     const response = await axios.post(`${baseUrl}profile/avatar`, formData, {
       headers: {
@@ -23,6 +24,7 @@ const uploadAvatar = async (formData) => {
 
 export const ChangeAvatar = ({ item }) => {
   const page = useSelector((state) => state.dataEmployee.currentPage);
+  console.log('avatar', item)
   const dispatch = useDispatch();
   const toast = useToast();
 
@@ -57,7 +59,7 @@ export const ChangeAvatar = ({ item }) => {
           <Box textAlign="left">
             <label>
               <input
-                id="image"
+                id={item.id}
                 type="file"
                 onChange={handleFileChange}
                 style={{ display: "none" }}

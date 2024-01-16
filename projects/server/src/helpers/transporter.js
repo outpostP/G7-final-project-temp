@@ -4,6 +4,7 @@ require("dotenv").config({
   path: path.resolve("../.env"),
 });
 
+
 const transporter = nodemailer.createTransport({
   service: process.env.NODEMAILER_SERVICE,
   auth: {

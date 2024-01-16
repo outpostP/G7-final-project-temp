@@ -8,8 +8,8 @@ import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const { id } = useParams();
-  const checkout = useLoaderData().data.Transaction_Products;
-  // console.log(checkout)
+  const checkout = useLoaderData().data.Transaction_Products
+  console.log('check',checkout)
   const total = useLoaderData().data;
   const toast = useToast();
   const navigate = useNavigate();
@@ -19,12 +19,14 @@ const Checkout = () => {
 
   const handlePayment = async () => {
     try {
-      const payment = await axios.post(`http://localhost:8000/cashier/checkout/${id}`,{ 
+      console.log('toje',token)
+      const payment = await axios.post(`http://localhost:8000/cashier/checkout/${id}`, {}, {
         headers: {
           "Authorization": `Bearer ${token}`
         },
-    });
-      console.log(payment);
+      });
+  
+      console.log("pay",payment);
       toast({
         title: "Payment Successful",
         description: payment.data.message,
@@ -72,7 +74,7 @@ const Checkout = () => {
             <Td colSpan="2" borderTop="1px solid black">
               Total:
             </Td>
-            <Td borderTop="1px solid black">{total.totalPrice}</Td>
+            <Td borderTop="1px solid black">{parseInt(total.totalPrice)}</Td>
           </Tr>
         </Tfoot>
       </Table>
@@ -99,9 +101,13 @@ const Checkout = () => {
 export default Checkout;
 
 export const checkoutLoader = async ({params}) => {
+  const token = localStorage.getItem("token");
   const {id} = params;
-  
-  const res = await fetch(`http://localhost:8000/admin/checkout/${id}`)
+  const res = await fetch(`http://localhost:8000/cashier/checkout/${id}`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
 
   return res.json();
 }

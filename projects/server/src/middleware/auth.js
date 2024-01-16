@@ -13,6 +13,7 @@ const verifyToken = async (req, res, next) => {
   const verifier = process.env.JWT_KEY;
   if (!token) {
     return res.status(401).json({
+      awoo: "awoo",
       error: "Unauthorized token",
       message: "No token",
     });
@@ -29,6 +30,7 @@ const verifyToken = async (req, res, next) => {
     }
 
     let verifiedUser = jwt.verify(token, verifier);
+    console.log('token', verifiedUser)
     if (!verifiedUser) {
       return res.status(401).json({
         error: "Unauthorized token",
@@ -46,7 +48,8 @@ const verifyToken = async (req, res, next) => {
 };
 
 const verifyAdmin = async (req, res, next) => {
-  const { isAdmin } = req.user;
+  // console.log('admin')
+  const { isAdmin } = req.user || {};
   if (!isAdmin) {
     return res.status(404).json({
       error: "Unauthorized user",
@@ -57,7 +60,8 @@ const verifyAdmin = async (req, res, next) => {
 };
 
 const verifyCashier = async (req, res, next) => {
-  const { isAdmin } = req.user;
+  const { isAdmin } = req.user || {};
+  console.log('admin', isAdmin)
   if (isAdmin) {
     return res.status(404).json({
       error: "Unauthorized user",
@@ -68,23 +72,41 @@ const verifyCashier = async (req, res, next) => {
 };
 
 const verifyCashierStatus = async (req, res, next) => {
-  const { username } = req.body;
-  const dataUser = await users.findOne({
-    where: { username: username },
-    include: [{ model: profiles }],
-  });
-  const userStatus = dataUser?.User_Profile?.isActive;
-  const userRole = dataUser?.isAdmin;
-  if (!userStatus && !userRole) {
-    return res.status(404).json({
-      error: "Unauthorized user",
-      message: "User no longer active",
+  if (req.user) {
+    const { id } = req.user || {};
+    const dataUser = await users.findOne({
+      where: { id: id },
+      include: [{ model: profiles }],
     });
+    const userStatus = dataUser?.User_Profile?.isActive;
+    const userRole = dataUser?.isAdmin;
+
+    if (!userStatus && !userRole) {
+      return res.status(401).json({
+        error: "Unauthorized user",
+        message: "User no longer active",
+      });
+    }
+  } else {
+    const { username } = req.body;
+    const dataUser = await users.findOne({
+      where: { username: username },
+      include: [{ model: profiles }],
+    });
+    // console.log('data', dataUser)
+    if (!dataUser || (!dataUser.isAdmin && !dataUser.User_Profile?.isActive)) {
+      return res.status(401).json({
+        error: "Unauthorized user",
+        message: "Invalid username or user not active",
+      });
+    }
   }
+
   next();
 };
+
 const verifyUserExist = async (req, res, next) => {
-  const userEmail = req.user.email;
+  const userEmail = req.user.email || {};
   const dataUser = await findEmail(userEmail);
   req.userReset = dataUser;
   if (!dataUser) {

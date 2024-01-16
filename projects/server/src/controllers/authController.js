@@ -9,10 +9,17 @@ const AuthController = {
       if (!userData) {
         return authService.validationLoginFailed(res, 404, "User not found");
       }
+      console.log(userData.dataValues)
+      const userId = userData.dataValues.id;
+      console.log('id',userId)
+      let userCart;
+      let userProfile;
+      if (!userData.dataValues.isAdmin) {
 
-      const userId = userData.id;
-      const userCart = await commonService.findUserCart(userId);
-      const userProfile = await commonService.findProfileUserId(userId);
+         userCart = await commonService.findUserCart(userId);
+         userProfile = await commonService.findProfileUserId(userId);
+      }
+      // console.log(userCart)
 
       const validatePassword = await commonService.validatePassword(
         password,
@@ -21,20 +28,28 @@ const AuthController = {
       if (!validatePassword) {
         return authService.validationLoginFailed(res, 400, "Invalid password");
       }
-
-      let payload = {
-        id: userData.id,
-        isAdmin: userData.isAdmin,
-      };
-
+      let payload;
+      if (!userData.isAdmin) {
+         payload = {
+          id: userId,
+          isAdmin: userData.isAdmin,
+          username:userCart.username,
+          cartId: userCart.id,
+          avatar: userProfile.avatar,
+        };
+      } else {
+        payload = {
+          id: userId,
+          isAdmin: userData.isAdmin,
+      }
+    }
       const token = await authService.generateToken(payload);
       if (userCart) {
         return res.status(200).json({
           success: "Login succeed",
           data: {
-            id: userData.id,
+            id: userId,
             username: userData.username,
-            cartId: userCart.id,
             isAdmin: userData.isAdmin,
             avatar: userProfile.avatar,
             token,
@@ -44,7 +59,7 @@ const AuthController = {
         return res.status(200).json({
           success: "Login succeed",
           data: {
-            id: userData.id,
+            id: userId,
             username: userData.username,
             isAdmin: userData.isAdmin,
             token,
@@ -92,12 +107,21 @@ const AuthController = {
   forgotPassword: async (req, res) => {
     try {
       const { email } = req.body;
-
+      const emailExist = await commonService.findEmail(email);
+  
+      if (!emailExist) {
+        return res.status(404).json({
+          error: "Email not found in the server.",
+          message: "Unregistered email.",
+        });
+      }
+  
       let payload = {
         email: email,
       };
       const token = await authService.generateToken(payload);
       SendEmail.verifyEmail(email, token);
+  
       return res.status(200).json({
         success: "Reset password succeed, Please verify from email!",
         token,
@@ -109,6 +133,7 @@ const AuthController = {
       });
     }
   },
+  
 
   resetPassword: async (req, res) => {
     try {
